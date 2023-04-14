@@ -12,7 +12,7 @@ module.exports = {
 			return;
 		}
 
-		const { client:{ cooldowns } } = interaction;
+		const { cooldowns } = interaction.client;
 
 		if (!cooldowns.has(command.data.name)) {
 			cooldowns.set(command.data.name, new Collection());
