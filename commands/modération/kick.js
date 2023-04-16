@@ -63,7 +63,7 @@ module.exports = {
 
 			if (confirmation.customId === "confirm") {
 				await response.edit({ embeds: [successEmbed(`${member} a été expulsé(e).\nRaison : \`${reason}\``)], components: [] });
-				await member.send({ embeds: [errorEmbed(`Vous avez été expulsé du serveur \`${interaction.guild.name}\` par ${interaction.user}.\nRaison : \`${reason}\``)] })
+				await member.send({ embeds: [errorEmbed(`Vous avez été expulsé(e) du serveur \`${interaction.guild.name}\` par ${interaction.user}.\nRaison : \`${reason}\``)] })
 					.then(() => interaction.followUp({ embeds: [successEmbed(`${member} a été informé(e) de son expulsion par message privé !`)], ephemeral: true }))
 					.catch(() => interaction.followUp({ embeds: [errorEmbed(`${member} n'a pas pu être informé(e) de son expulsion par message privé !`)], ephemeral: true }));
 				await member.kick(reason);
