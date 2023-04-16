@@ -33,7 +33,7 @@ module.exports = {
 
 		const confirm = new ButtonBuilder()
 			.setCustomId("confirm")
-			.setLabel("Confirmer")
+			.setLabel("Expulser")
 			.setStyle(ButtonStyle.Danger);
 
 		const cancel = new ButtonBuilder()
