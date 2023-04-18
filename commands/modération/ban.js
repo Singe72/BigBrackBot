@@ -95,11 +95,11 @@ module.exports = {
 					.catch(() => interaction.followUp({ embeds: [errorEmbed(`${member} n'a pas pu être informé(e) de son bannissement par message privé !`)], ephemeral: true }));
 				await member.ban({ deleteMessageSeconds: deleteTimeNumber, reason: reason });
 			} else if (confirmation.customId === "cancel") {
-				await response.edit({ embeds: [errorEmbed(`L'expulsion de ${member} a été annulée.`)], components: [] });
+				await response.edit({ embeds: [errorEmbed(`Le bannissement de ${member} a été annulé.`)], components: [] });
 			}
 		} catch (error) {
 			console.error(error);
-			await response.edit({ embeds: [errorEmbed(`Aucune réponse reçue pendant 1 minute, l'expulsion de ${member} est annulée.`)], components: [] });
+			await response.edit({ embeds: [errorEmbed(`Aucune réponse reçue pendant 1 minute, le bannissement de ${member} est annulé.`)], components: [] });
 		}
 	}
 };
