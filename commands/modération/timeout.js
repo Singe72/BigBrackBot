@@ -61,7 +61,6 @@ module.exports = {
 
 		if (member.isCommunicationDisabled()) {
 			const mutedTimestamp = parseInt(member.communicationDisabledUntilTimestamp / 1000);
-
 			return interaction.reply({ embeds: [errorEmbed(`${member} est déjà timed out et pourra à nouveau communiquer <t:${mutedTimestamp}:R> !`)], ephemeral: true });
 		}
 
