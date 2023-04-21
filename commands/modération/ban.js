@@ -98,7 +98,6 @@ module.exports = {
 				await response.edit({ embeds: [errorEmbed(`Le bannissement de ${member} a été annulé.`)], components: [] });
 			}
 		} catch (error) {
-			console.error(error);
 			await response.edit({ embeds: [errorEmbed(`Aucune réponse reçue pendant 1 minute, le bannissement de ${member} est annulé.`)], components: [] });
 		}
 	}
