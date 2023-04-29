@@ -28,6 +28,7 @@ module.exports = {
 					option.setName("nom")
 						.setDescription("Nom du tag")
 						.setRequired(true)
+						.setAutocomplete(true)
 				)
 		)
 		.addSubcommand(subcommand =>
@@ -37,6 +38,7 @@ module.exports = {
 					option.setName("nom")
 						.setDescription("Nom du tag")
 						.setRequired(true)
+						.setAutocomplete(true)
 				)
 				.addStringOption(option =>
 					option.setName("description")
@@ -51,6 +53,7 @@ module.exports = {
 					option.setName("nom")
 						.setDescription("Nom du tag")
 						.setRequired(true)
+						.setAutocomplete(true)
 				)
 		)
 		.addSubcommand(subcommand =>
@@ -64,9 +67,19 @@ module.exports = {
 					option.setName("nom")
 						.setDescription("Nom du tag")
 						.setRequired(true)
+						.setAutocomplete(true)
 				)
 		)
 		.setDMPermission(true),
+	async autocomplete(interaction) {
+		const focusedValue = interaction.options.getFocused();
+		const choices = await Tags.findAll({ attributes: ["name"] }).then(tags => tags.map(tag => tag.name));
+		const filtered = choices.filter(choice => choice.startsWith(focusedValue));
+		const filteredLimit = filtered.slice(0, 25);
+		await interaction.respond(
+			filteredLimit.map(choice => ({ name: choice, value: choice }))
+		);
+	},
 	async execute(interaction) {
 		const subcommand = interaction.options.getSubcommand();
 
