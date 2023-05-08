@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { Tags } = require("../../dbObjects.js");
-const { colorlessEmbed, errorEmbed, successEmbed } = require("../../utils/embeds.js");
+const { simpleEmbed } = require("../../utils/embeds.js");
 
 module.exports = {
 	cooldown: 5,
@@ -94,11 +94,11 @@ module.exports = {
 					user_id: interaction.user.id
 				});
 
-				return interaction.reply({ embeds: [successEmbed(`Le tag \`${tag.name}\` a été créé avec succès !`)] });
+				return interaction.reply({ embeds: [simpleEmbed(`Le tag \`${tag.name}\` a été créé avec succès !`)] });
 			} catch (error) {
-				if (error.name === "SequelizeUniqueConstraintError") return interaction.reply({ embeds: [errorEmbed(`Le tag \`${tagName}\` existe déjà !`)], ephemeral: true });
+				if (error.name === "SequelizeUniqueConstraintError") return interaction.reply({ embeds: [simpleEmbed(`Le tag \`${tagName}\` existe déjà !`)], ephemeral: true });
 
-				return interaction.reply({ embeds: [errorEmbed(`Une erreur est survenue lors de la création du tag \`${tagName}\``)], ephemeral: true });
+				return interaction.reply({ embeds: [simpleEmbed(`Une erreur est survenue lors de la création du tag \`${tagName}\``)], ephemeral: true });
 			}
 		} else if (subcommand === "show") {
 			const tagName = interaction.options.getString("nom");
@@ -107,34 +107,34 @@ module.exports = {
 
 			if (tag) {
 				tag.increment("usage_count");
-				return interaction.reply({ embeds: [colorlessEmbed(`**${tag.get("name")}**\n\n${tag.get("description")}`)] });
+				return interaction.reply({ embeds: [simpleEmbed(`**${tag.get("name")}**\n\n${tag.get("description")}`)] });
 			}
 
-			return interaction.reply({ embeds: [errorEmbed(`Le tag \`${tagName}\` n'existe pas !`)], ephemeral: true });
+			return interaction.reply({ embeds: [simpleEmbed(`Le tag \`${tagName}\` n'existe pas !`)], ephemeral: true });
 
 		} else if (subcommand === "edit") {
 			const tagName = interaction.options.getString("nom");
 			const tagDescription = interaction.options.getString("description");
 
 			const tag = await Tags.findOne({ where: { name: tagName } });
-			if (!tag) return interaction.reply({ embeds: [errorEmbed(`Le tag \`${tagName}\` n'existe pas !`)], ephemeral: true });
+			if (!tag) return interaction.reply({ embeds: [simpleEmbed(`Le tag \`${tagName}\` n'existe pas !`)], ephemeral: true });
 
 			const tagAuthorId = tag.get("user_id");
-			if (tagAuthorId !== interaction.user.id) return interaction.reply({ embeds: [errorEmbed(`Vous n'êtes pas l'auteur du tag \`${tagName}\` !`)], ephemeral: true });
+			if (tagAuthorId !== interaction.user.id) return interaction.reply({ embeds: [simpleEmbed(`Vous n'êtes pas l'auteur du tag \`${tagName}\` !`)], ephemeral: true });
 
 			await Tags.update({ description: tagDescription }, { where: { name: tagName } });
 
-			return interaction.reply({ embeds: [successEmbed(`Le tag \`${tagName}\` a été modifié avec succès !`)] });
+			return interaction.reply({ embeds: [simpleEmbed(`Le tag \`${tagName}\` a été modifié avec succès !`)] });
 		} else if (subcommand === "info") {
 			const tagName = interaction.options.getString("nom");
 
 			const tag = await Tags.findOne({ where: { name: tagName } });
-			if (!tag) return interaction.reply({ embeds: [errorEmbed(`Le tag \`${tagName}\` n'existe pas !`)], ephemeral: true });
+			if (!tag) return interaction.reply({ embeds: [simpleEmbed(`Le tag \`${tagName}\` n'existe pas !`)], ephemeral: true });
 
 			const createdAt = tag.get("createdAt");
 			const createdTimestamp = parseInt(createdAt.getTime() / 1000);
 
-			return interaction.reply({ embeds: [colorlessEmbed(
+			return interaction.reply({ embeds: [simpleEmbed(
 				`**Informations sur le tag \`${tagName}\`**\n
 				Nom : \`${tag.get("name")}\`
 				Description : \`${tag.get("description")}\`
@@ -146,19 +146,19 @@ module.exports = {
 			const tagList = await Tags.findAll({ attributes: ["name"] });
 			const tagString = tagList.map(t => `\`${t.name}\``).join(", ") || "Aucun tag créé";
 
-			return interaction.reply({ embeds: [colorlessEmbed(`**Liste des tags**\n\n${tagString}`)] });
+			return interaction.reply({ embeds: [simpleEmbed(`**Liste des tags**\n\n${tagString}`)] });
 		} else if (subcommand === "delete") {
 			const tagName = interaction.options.getString("nom");
 
 			const tag = await Tags.findOne({ where: { name: tagName } });
-			if (!tag) return interaction.reply({ embeds: [errorEmbed(`Le tag \`${tagName}\` n'existe pas !`)], ephemeral: true });
+			if (!tag) return interaction.reply({ embeds: [simpleEmbed(`Le tag \`${tagName}\` n'existe pas !`)], ephemeral: true });
 
 			const tagAuthorId = tag.get("user_id");
-			if (tagAuthorId !== interaction.user.id) return interaction.reply({ embeds: [errorEmbed(`Vous n'êtes pas l'auteur du tag \`${tagName}\` !`)], ephemeral: true });
+			if (tagAuthorId !== interaction.user.id) return interaction.reply({ embeds: [simpleEmbed(`Vous n'êtes pas l'auteur du tag \`${tagName}\` !`)], ephemeral: true });
 
 			await Tags.destroy({ where: { name: tagName } });
 
-			return interaction.reply({ embeds: [successEmbed(`Le tag \`${tagName}\` a été supprimé avec succès !`)] });
+			return interaction.reply({ embeds: [simpleEmbed(`Le tag \`${tagName}\` a été supprimé avec succès !`)] });
 		}
 	}
 };

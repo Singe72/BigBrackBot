@@ -1,28 +1,12 @@
 const { EmbedBuilder } = require("discord.js");
-const { colors } = require("../config.json");
+const { clientColor } = require("../config.json");
 
-function infoEmbed(description) {
+function simpleEmbed(description) {
 	return new EmbedBuilder()
-		.setColor(colors.info)
+		.setColor(clientColor)
 		.setDescription(description);
 }
 
-function successEmbed(description) {
-	return new EmbedBuilder()
-		.setColor(colors.success)
-		.setDescription(description);
-}
+// TODO : richEmbed
 
-function errorEmbed(description) {
-	return new EmbedBuilder()
-		.setColor(colors.error)
-		.setDescription(description);
-}
-
-function colorlessEmbed(description) {
-	return new EmbedBuilder()
-		.setColor(colors.colorless)
-		.setDescription(description);
-}
-
-module.exports = { infoEmbed, successEmbed, errorEmbed, colorlessEmbed };
+module.exports = { simpleEmbed };

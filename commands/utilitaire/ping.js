@@ -1,5 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder } = require("discord.js");
-const { colors: { colorless } } = require("../../config.json");
+const { clientColor } = require("../../config.json");
 
 module.exports = {
 	cooldown: 5,
@@ -17,7 +17,7 @@ module.exports = {
 		const emojis = ["🟢", "🟡", "🔴"];
 
 		const embed = new EmbedBuilder()
-			.setColor(colorless)
+			.setColor(clientColor)
 			.setTitle("🏓 Pong !")
 			.addFields(
 				{ name: "Latence Bot", value: `\`${clientPing < 200 ? emojis[0] : clientPing < 400 ? emojis[1] : emojis[2]}\` ${clientPing}ms` },
