@@ -8,6 +8,7 @@ const sequelize = new Sequelize(name, user, password, {
 });
 
 require("./models/Tags")(sequelize, Sequelize.DataTypes);
+require("./models/Warns")(sequelize, Sequelize.DataTypes);
 
 const force = process.argv.includes("--force") || process.argv.includes("-f");
 

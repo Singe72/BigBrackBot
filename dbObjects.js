@@ -8,5 +8,6 @@ const sequelize = new Sequelize(name, user, password, {
 });
 
 const Tags = require("./models/Tags")(sequelize, Sequelize.DataTypes);
+const Warns = require("./models/Warns")(sequelize, Sequelize.DataTypes);
 
-module.exports = { Tags };
+module.exports = { Tags, Warns };
