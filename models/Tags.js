@@ -2,7 +2,7 @@ module.exports = (sequelize, DataTypes) => {
 	return sequelize.define("tags", {
 		name: {
 			type: DataTypes.STRING,
-			unique: true
+			primaryKey: true
 		},
 		description: DataTypes.TEXT,
 		user_id: DataTypes.STRING,
