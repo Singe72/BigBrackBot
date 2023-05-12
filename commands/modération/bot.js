@@ -23,6 +23,7 @@ module.exports = {
 								.setRequired(true)
 								.addChoices(
 									{ name: "Joue à", value: ActivityType.Playing },
+									{ name: "Participant à", value: ActivityType.Competing },
 									{ name: "Écoute", value: ActivityType.Listening },
 									{ name: "Regarde", value: ActivityType.Watching },
 									{ name: "Streame", value: ActivityType.Streaming }
