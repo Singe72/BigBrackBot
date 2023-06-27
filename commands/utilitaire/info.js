@@ -239,6 +239,8 @@ module.exports = {
 					presences += `${emoji} `;
 				});
 
+				console.log(user);
+
 				const embed = new EmbedBuilder()
 					.setColor(clientColor)
 					.setTitle("Informations du membre")
@@ -247,8 +249,8 @@ module.exports = {
 						{
 							name: "Informations sur l'utilisateur",
 							value: `
-							> **Nom** : \`${user.username}\`
-							> **Tag** : \`${user.tag}\`
+							> **Nom d'affichage** : \`${user.displayName}\`
+							> **Nom d'utilisateur** : \`${user.username}\`
 							> **ID** : \`${user.id}\`
 							> **Date de création** : <t:${createdTimestamp}:F> (<t:${createdTimestamp}:R>)
 							> **Bot** : \`${user.bot ? "🟢" : user.id === ownerId ? "🟢" : "🔴" }\`
@@ -263,7 +265,7 @@ module.exports = {
 							> **Pseudo** : ${member}
 							> **Date d'arrivée** : <t:${joinedTimestamp}:F> (<t:${joinedTimestamp}:R>)
 							> **Rôles** : ${roles.join(" ")}
-							> **Timed out** : \`${member.isCommunicationDisabled() ? "🟢" : "🔴"}\`
+							> **Exclu** : \`${member.isCommunicationDisabled() ? "🟢" : "🔴"}\`
 							> **Booster** : \`${member.premiumSince ? "🟢" : "🔴"}\`
 							> **Administrateur** : \`${member.permissions.has(PermissionFlagsBits.Administrator) ? "🟢" : "🔴"}\`
 							`
