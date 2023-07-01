@@ -27,7 +27,7 @@ module.exports = {
 					option.setName("salon")
 						.setDescription("Salon où le giveaway sera affiché")
 						.addChannelTypes(ChannelType.GuildText)
-						.setRequired(true)))
+						.setRequired(false)))
 		.addSubcommand(subcommand =>
 			subcommand.setName("end")
 				.setDescription("Terminer un giveaway")
@@ -74,7 +74,7 @@ module.exports = {
 				const duration = options.getString("durée");
 				const winners = options.getInteger("gagnants");
 				const prize = options.getString("récompense");
-				const channel = options.getChannel("salon");
+				const channel = options.getChannel("salon") ?? interaction.channel;
 
 				const time = ms(duration);
 				if (isNaN(time)) return interaction.reply({ embeds: [simpleEmbed("Veuillez spécifier une durée valide !")], ephemeral: true });
