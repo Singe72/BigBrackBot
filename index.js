@@ -8,7 +8,8 @@ const client = new Client({
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildPresences,
 		GatewayIntentBits.GuildMembers,
-		GatewayIntentBits.GuildMessageReactions
+		GatewayIntentBits.GuildMessageReactions,
+		GatewayIntentBits.GuildVoiceStates
 	]
 });
 
@@ -17,6 +18,10 @@ client.commands = new Collection();
 
 // GiveawaysManager
 require("./utils/giveawaysManager.js")(client);
+
+// Distube
+require("./utils/distubeClient.js")(client);
+require("./utils/distubeEvents.js")(client);
 
 const commandFoldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(commandFoldersPath);
