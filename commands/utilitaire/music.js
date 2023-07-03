@@ -1,5 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { simpleEmbed } = require("../../utils/embeds.js");
+const { Client } = require("genius-lyrics");
+const { genius: token } = require("../../config.json");
 
 function addSource(source) {
 	const sources = {
@@ -83,7 +85,14 @@ module.exports = {
 				.setDescription("Demander au bot de rejoindre le salon vocal"))
 		.addSubcommand(subcommand =>
 			subcommand.setName("leave")
-				.setDescription("Demander au bot de quitter le salon vocal")),
+				.setDescription("Demander au bot de quitter le salon vocal"))
+		.addSubcommand(subcommand =>
+			subcommand.setName("lyrics")
+				.setDescription("Afficher les paroles d'une musique")
+				.addStringOption(option =>
+					option.setName("musique")
+						.setDescription("Nom de la musique")
+						.setRequired(false))),
 	async execute(interaction) {
 		const { channel, client, guild, member, options } = interaction;
 		const subcommand = options.getSubcommand();
@@ -98,11 +107,16 @@ module.exports = {
 				await interaction.deferReply();
 
 				const query = options.getString("musique");
-				client.distube.play(voiceChannel, query, {
-					textChannel: channel,
-					member: member,
-					metadata: { i: interaction }
-				});
+				client.distube
+					.play(voiceChannel, query, {
+						textChannel: channel,
+						member: member,
+						metadata: { i: interaction }
+					})
+					.catch(error => {
+						console.error(error);
+						interaction.editReply({ embeds: [simpleEmbed("Une erreur est survenue lors de la lecture de la musique !")], ephemeral: true });
+					});
 				break;
 			}
 
@@ -208,14 +222,16 @@ module.exports = {
 			case "queue": {
 				const queue = client.distube.getQueue(guild);
 				if (!queue) return interaction.reply({ embeds: [simpleEmbed("La file d'attente est vide.")] });
-				await interaction.reply({ embeds: [simpleEmbed(
-					`**Joue actuellement** [\`${queue.songs[0].name}\`](${queue.songs[0].url}) - \`${queue.songs[0].formattedDuration}\`
+				await interaction.reply({
+					embeds: [simpleEmbed(
+						`**Joue actuellement** [\`${queue.songs[0].name}\`](${queue.songs[0].url}) - \`${queue.songs[0].formattedDuration}\`
 					${queue.songs.length <= 1 ? "\nLa file d'attente est vide." : `
 					**__File d'attente__** (${queue.songs.length - 1})
 					${queue.songs.slice(1, 11).map((song, id) => `${addSource(song.source)} **${id + 1}**. [\`${song.name}\`](${song.url}) - \`${song.formattedDuration}\``).join("\n")}
 
 					${queue.songs.length > 11 ? `Et ${queue.songs.length - 11} autre${queue.songs.length - 11 > 1 ? "s" : ""}...` : ""}`}
-				`)] });
+				`)]
+				});
 				break;
 			}
 
@@ -250,6 +266,26 @@ module.exports = {
 
 				await client.distube.voices.leave(guild);
 				await interaction.reply({ embeds: [simpleEmbed(`${client.user} a quitté le salon ${voiceChannel}.`)] });
+				break;
+			}
+
+			case "lyrics": {
+				await interaction.deferReply();
+
+				const music = options.getString("musique") ?? client.distube.getQueue(guild)?.songs[0]?.name;
+				if (!music) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture, et vous n'avez spécifier aucune musique valide !")], ephemeral: true });
+
+				const geniusClient = new Client(token);
+				const searches = await geniusClient.songs.search(music);
+				const firstSong = searches[0];
+				const lyrics = await firstSong.lyrics();
+
+				await interaction.editReply({
+					embeds: [simpleEmbed(
+						`**__Paroles de ${firstSong.title}__**
+					${lyrics.length > 4096 ? `${lyrics.slice(0, 4093)}...` : lyrics}
+				`).setFooter({ text: "Source : api.genius.com" })]
+				});
 				break;
 			}
 		}
