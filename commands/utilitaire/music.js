@@ -175,7 +175,7 @@ module.exports = {
 			case "skip": {
 				const queue = client.distube.getQueue(guild);
 				if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
-				if (queue.songs.length === 1) return interaction.reply({ embeds: [simpleEmbed("Il n'y a aucune musique dans la file d'attente !")], ephemeral: true });
+				if (queue.songs.length === 1 && !queue.autoplay) return interaction.reply({ embeds: [simpleEmbed("Il n'y a aucune musique dans la file d'attente !")], ephemeral: true });
 
 				await queue.skip();
 				await interaction.reply({ embeds: [simpleEmbed(`⏭️ La musique a été passée par ${member}.`)] });
