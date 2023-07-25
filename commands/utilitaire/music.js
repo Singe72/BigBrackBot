@@ -119,7 +119,7 @@ module.exports = {
 				await interaction.deferReply();
 
 				const query = options.getString("musique");
-				client.distube
+				await client.distube
 					.play(voiceChannel, query, {
 						textChannel: channel,
 						member: member,
