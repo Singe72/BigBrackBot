@@ -32,6 +32,7 @@
 		"sequelize": "^6.31.0",
 		"sqlite3": "^5.1.6",
 		"uuid": "^9.0.0",
+		"youtube-autocomplete": "^0.0.1",
 		"yt-search": "^2.10.4",
 		"ytdl-core": "^4.11.4"
 	},

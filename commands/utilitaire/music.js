@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { simpleEmbed } = require("../../utils/embeds.js");
+const AutoComplete = require("youtube-autocomplete");
 const { Client } = require("genius-lyrics");
 const { genius: token } = require("../../config.json");
 
@@ -24,7 +25,8 @@ module.exports = {
 				.addStringOption(option =>
 					option.setName("musique")
 						.setDescription("Nom de la musique")
-						.setRequired(true)))
+						.setRequired(true)
+						.setAutocomplete(true)))
 		.addSubcommand(subcommand =>
 			subcommand.setName("pause")
 				.setDescription("Mettre en pause la musique"))
@@ -93,6 +95,16 @@ module.exports = {
 					option.setName("musique")
 						.setDescription("Nom de la musique")
 						.setRequired(false))),
+	async autocomplete(interaction) {
+		const focusedValue = interaction.options.getFocused();
+		AutoComplete(focusedValue, async (err, queries) => {
+			if (err) throw err;
+			const choices = queries[1];
+			await interaction.respond(
+				choices.slice(0, 15).map(choice => ({ name: choice, value: choice }))
+			);
+		});
+	},
 	async execute(interaction) {
 		const { channel, client, guild, member, options } = interaction;
 		const subcommand = options.getSubcommand();
