@@ -138,7 +138,7 @@ module.exports = {
 				if (queue.paused) return interaction.reply({ embeds: [simpleEmbed("La musique est déjà en pause !")], ephemeral: true });
 
 				await queue.pause();
-				await interaction.reply({ embeds: [simpleEmbed(`⏸️ La musique a été mise en pause par ${member}.`)] });
+				await interaction.reply({ embeds: [simpleEmbed("⏸️ La musique a été mise en pause.")] });
 				break;
 			}
 
@@ -148,7 +148,7 @@ module.exports = {
 				if (!queue.paused) return interaction.reply({ embeds: [simpleEmbed("La musique n'est pas en pause !")], ephemeral: true });
 
 				await queue.resume();
-				await interaction.reply({ embeds: [simpleEmbed(`▶️ La musique a été reprise par ${member}.`)] });
+				await interaction.reply({ embeds: [simpleEmbed("▶️ La musique a été reprise.")] });
 				break;
 			}
 
@@ -160,7 +160,7 @@ module.exports = {
 				if (time > queue.songs[0].duration) return interaction.reply({ embeds: [simpleEmbed("Le temps spécifié est supérieur à la durée de la musique !")], ephemeral: true });
 
 				await queue.seek(time);
-				await interaction.reply({ embeds: [simpleEmbed(`⏩ La musique a été avancée à \`${time} secondes\` par ${member}.`)] });
+				await interaction.reply({ embeds: [simpleEmbed(`⏩ La musique a été avancée à \`${time} secondes\`.`)] });
 				break;
 			}
 
@@ -172,7 +172,7 @@ module.exports = {
 				if (queue.currentTime - time < 0) return interaction.reply({ embeds: [simpleEmbed("La musique ne peut pas être reculée d'autant de secondes !")], ephemeral: true });
 
 				await queue.seek(queue.currentTime - time);
-				await interaction.reply({ embeds: [simpleEmbed(`⏪ La musique a été reculée de \`${time} secondes\` par ${member}.`)] });
+				await interaction.reply({ embeds: [simpleEmbed(`⏪ La musique a été reculée de \`${time} secondes\`.`)] });
 				break;
 			}
 
@@ -184,7 +184,7 @@ module.exports = {
 				if (queue.currentTime + time > queue.songs[0].duration) return interaction.reply({ embeds: [simpleEmbed("La musique ne peut pas être avancée d'autant de secondes !")], ephemeral: true });
 
 				await queue.seek(queue.currentTime + time);
-				await interaction.reply({ embeds: [simpleEmbed(`⏩ La musique a été avancée de \`${time} secondes\` par ${member}.`)] });
+				await interaction.reply({ embeds: [simpleEmbed(`⏩ La musique a été avancée de \`${time} secondes\`.`)] });
 				break;
 			}
 
@@ -194,7 +194,7 @@ module.exports = {
 				if (queue.previousSongs.length === 0) return interaction.reply({ embeds: [simpleEmbed("Il n'y a aucune musique précédente !")], ephemeral: true });
 
 				await queue.previous();
-				await interaction.reply({ embeds: [simpleEmbed(`⏮️ La musique précédente a été jouée par ${member}.`)] });
+				await interaction.reply({ embeds: [simpleEmbed("⏮️ La musique précédente est jouée.")] });
 				break;
 			}
 
@@ -204,7 +204,7 @@ module.exports = {
 				if (queue.songs.length === 1 && !queue.autoplay) return interaction.reply({ embeds: [simpleEmbed("Il n'y a aucune musique dans la file d'attente !")], ephemeral: true });
 
 				await queue.skip();
-				await interaction.reply({ embeds: [simpleEmbed(`⏭️ La musique a été passée par ${member}.`)] });
+				await interaction.reply({ embeds: [simpleEmbed("⏭️ La musique a été passée.")] });
 				break;
 			}
 
@@ -215,7 +215,7 @@ module.exports = {
 				const number = options.getInteger("numéro");
 				try {
 					queue.jump(number);
-					await interaction.reply({ embeds: [simpleEmbed(`⏭️ La musique a été passée à la position \`${number}\` par ${member}.`)] });
+					await interaction.reply({ embeds: [simpleEmbed(`⏭️ La musique a été passée à la position \`${number}\`.`)] });
 				} catch (error) {
 					await interaction.reply({ embeds: [simpleEmbed("Le numéro de la musique est invalide !")], ephemeral: true });
 				}
@@ -227,7 +227,7 @@ module.exports = {
 				if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
 
 				await queue.stop();
-				await interaction.reply({ embeds: [simpleEmbed(`⏹️ La musique a été arrêtée par ${member}.`)] });
+				await interaction.reply({ embeds: [simpleEmbed("⏹️ La musique a été arrêtée.")] });
 				break;
 			}
 
@@ -252,7 +252,7 @@ module.exports = {
 				if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
 
 				await queue.shuffle();
-				await interaction.reply({ embeds: [simpleEmbed(`🔀 La file d'attente a été mélangée par ${member}.`)] });
+				await interaction.reply({ embeds: [simpleEmbed("🔀 La file d'attente a été mélangée.")] });
 				break;
 			}
 
@@ -261,7 +261,7 @@ module.exports = {
 				if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
 
 				await queue.toggleAutoplay();
-				await interaction.reply({ embeds: [simpleEmbed(`▶️ Le mode autoplay a été \`${queue.autoplay ? "activé" : "désactivé"}\` par ${member}.`)] });
+				await interaction.reply({ embeds: [simpleEmbed(`▶️ Le mode autoplay a été \`${queue.autoplay ? "activé" : "désactivé"}\`.`)] });
 				break;
 			}
 
