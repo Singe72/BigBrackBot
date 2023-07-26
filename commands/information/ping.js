@@ -3,7 +3,7 @@ const { clientColor } = require("../../config.json");
 
 module.exports = {
 	cooldown: 5,
-	category: "utilitaire",
+	category: "information",
 	data: new SlashCommandBuilder()
 		.setName("ping")
 		.setDescription("Affiche rrla latence du bot")

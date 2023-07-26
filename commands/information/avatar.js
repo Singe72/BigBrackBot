@@ -5,7 +5,7 @@ const buttonPages = require("../../utils/pagination.js");
 
 module.exports = {
 	cooldown: 5,
-	category: "utilitaire",
+	category: "information",
 	data: new SlashCommandBuilder()
 		.setName("avatar")
 		.setDescription("Afficher l'avatar d'un membre")
