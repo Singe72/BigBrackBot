@@ -31,7 +31,7 @@ module.exports = {
 						.setTitle("Image du jour de la NASA")
 						.setDescription(`
 							__${data.title}__ ${data.date}
-							${data.copyright ? `*© ${data.copyright}*` : ""}
+							${data.copyright ? `*© ${data.copyright.replace(/\n/g, "")}*` : ""}
 						`)
 						.setImage(data.hdurl ? data.hdurl : data.url)
 						.setFooter({ text: "Source : NASA" });
