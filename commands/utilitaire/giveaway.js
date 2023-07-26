@@ -5,6 +5,7 @@ const { clientColor } = require("../../config.json");
 
 module.exports = {
 	cooldown: 5,
+	category: "utilitaire",
 	data: new SlashCommandBuilder()
 		.setName("giveaway")
 		.setDescription("Gérer les giveaways")

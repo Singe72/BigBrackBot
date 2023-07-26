@@ -3,6 +3,7 @@ const { simpleEmbed } = require("../../utils/embeds.js");
 
 module.exports = {
 	cooldown: 5,
+	category: "modération",
 	data: new SlashCommandBuilder()
 		.setName("restart")
 		.setDescription("Redémarrer le bot")

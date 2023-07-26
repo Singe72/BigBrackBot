@@ -39,6 +39,7 @@ function formatLanguage(language) {
 
 module.exports = {
 	cooldown: 5,
+	category: "utilitaire",
 	data: new SlashCommandBuilder()
 		.setName("translate")
 		.setDescription("Traduire un texte")

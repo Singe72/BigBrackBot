@@ -3,6 +3,8 @@ const { clientColor, nasa: api_key } = require("../../config.json");
 const { simpleEmbed } = require("../../utils/embeds.js");
 
 module.exports = {
+	cooldown: 5,
+	category: "fun",
 	data: new SlashCommandBuilder()
 		.setName("nasa")
 		.setDescription("Afficher une image de la NASA")

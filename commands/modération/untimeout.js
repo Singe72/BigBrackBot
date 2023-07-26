@@ -3,6 +3,7 @@ const { simpleEmbed } = require("../../utils/embeds");
 
 module.exports = {
 	cooldown: 5,
+	category: "modération",
 	data: new SlashCommandBuilder()
 		.setName("untimeout")
 		.setDescription("Révoquer l'exclusion temporaire d'un membre du serveur")

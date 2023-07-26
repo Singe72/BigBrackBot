@@ -3,6 +3,7 @@ const { profileImage } = require("discord-arts");
 
 module.exports = {
 	cooldown: 5,
+	category: "fun",
 	data: new SlashCommandBuilder()
 		.setName("profile")
 		.setDescription("Gérer son profil et afficher celui des autres membres")

@@ -16,6 +16,7 @@ function addSource(source) {
 
 module.exports = {
 	cooldown: 0,
+	category: "utilitaire",
 	data: new SlashCommandBuilder()
 		.setName("music")
 		.setDescription("Gérer la musique")

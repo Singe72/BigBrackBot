@@ -34,6 +34,7 @@ function formatBytes(a, b) {
 
 module.exports = {
 	cooldown: 5,
+	category: "utilitaire",
 	data: new SlashCommandBuilder()
 		.setName("info")
 		.setDescription("Afficher les informations du bot, du serveur ou d'un utilisateur")

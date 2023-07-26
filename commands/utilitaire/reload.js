@@ -1,7 +1,9 @@
 const { SlashCommandBuilder } = require("discord.js");
+const { simpleEmbed } = require("../../utils/embeds.js");
 
 module.exports = {
 	cooldown: 5,
+	category: "utilitaire",
 	data: new SlashCommandBuilder()
 		.setName("reload")
 		.setDescription("Recharge une commande")
@@ -13,18 +15,18 @@ module.exports = {
 		const commandName = interaction.options.getString("commande");
 		const command = interaction.client.commands.get(commandName);
 
-		if (!command) return interaction.reply({ content: `La commande \`${commandName}\` n'existe pas !` });
+		if (!command) return interaction.reply({ embeds: [simpleEmbed(`La commande \`${commandName}\` n'existe pas !`)], ephemeral: true });
 
-		delete require.cache[require.resolve(`./${command.data.name}.js`)];
+		delete require.cache[require.resolve(`../${command.category}/${command.data.name}.js`)];
 
 		try {
 			interaction.client.commands.delete(command.data.name);
-			const newCommand = require(`./${command.data.name}.js`);
+			const newCommand = require(`../${command.category}/${command.data.name}.js`);
 			interaction.client.commands.set(newCommand.data.name, newCommand);
-			await interaction.reply({ content: `La commande \`${newCommand.data.name}\` a été rechargée !` });
+			await interaction.reply({ embeds:[simpleEmbed(`La commande \`${newCommand.data.name}\` a été rechargée !`)], ephemeral: true });
 		} catch (error) {
 			console.error(error);
-			await interaction.reply({ content: `Une erreur est survenue lors du rechargement de la commande \`${command.data.name}\`:\n\`${error.message}\`` });
+			await interaction.reply({ embeds:[simpleEmbed(`Une erreur est survenue lors du rechargement de la commande \`${command.data.name}\`:\n\`${error.message}\``)], ephemeral: true });
 		}
 	}
 };

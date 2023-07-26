@@ -3,9 +3,10 @@ const { clientColor } = require("../../config.json");
 
 module.exports = {
 	cooldown: 5,
+	category: "utilitaire",
 	data: new SlashCommandBuilder()
 		.setName("ping")
-		.setDescription("Affiche la latence du bot")
+		.setDescription("Affiche rrla latence du bot")
 		.setDMPermission(true),
 	async execute(interaction) {
 		await interaction.deferReply();

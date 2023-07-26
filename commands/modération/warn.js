@@ -7,6 +7,7 @@ const buttonPages = require("../../utils/pagination.js");
 
 module.exports = {
 	cooldown: 5,
+	category: "modération",
 	data: new SlashCommandBuilder()
 		.setName("warn")
 		.setDescription("Gérer les warns")
