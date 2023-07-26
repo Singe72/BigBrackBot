@@ -1,4 +1,5 @@
 const { Collection, Events } = require("discord.js");
+const { simpleEmbed } = require("../../utils/embeds.js");
 
 module.exports = {
 	name: Events.InteractionCreate,
@@ -28,7 +29,7 @@ module.exports = {
 
 			if (now < expirationTime) {
 				const expiredTimestamp = Math.round(expirationTime / 1000);
-				return interaction.reply({ content: `Veuillez patienter, vous êtes en cooldown pour la commande \`${command.data.name}\`. Vous pourrez à nouveau l'utiliser <t:${expiredTimestamp}:R>.`, ephemeral: true });
+				return interaction.reply({ embeds: [simpleEmbed(`Veuillez patienter, vous êtes en cooldown pour la commande \`${command.data.name}\`.\nVous pourrez à nouveau l'utiliser <t:${expiredTimestamp}:R>.`)], ephemeral: true });
 			}
 		}
 
