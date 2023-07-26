@@ -285,7 +285,7 @@ module.exports = {
 				await interaction.deferReply();
 
 				const music = options.getString("musique") ?? client.distube.getQueue(guild)?.songs[0]?.name;
-				if (!music) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture, et vous n'avez spécifier aucune musique valide !")], ephemeral: true });
+				if (!music) return interaction.editReply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture, et vous n'avez spécifier aucune musique valide !")], ephemeral: true });
 
 				const geniusClient = new Client(token);
 				const searches = await geniusClient.songs.search(music);
@@ -295,6 +295,7 @@ module.exports = {
 				await interaction.editReply({
 					embeds: [simpleEmbed(
 						`**__Paroles de ${firstSong.title}__**
+
 					${lyrics.length > 4096 ? `${lyrics.slice(0, 4093)}...` : lyrics}
 				`).setFooter({ text: "Source : Genius" })]
 				});
