@@ -296,7 +296,7 @@ module.exports = {
 					embeds: [simpleEmbed(
 						`**__Paroles de ${firstSong.title}__**
 					${lyrics.length > 4096 ? `${lyrics.slice(0, 4093)}...` : lyrics}
-				`).setFooter({ text: "Source : api.genius.com" })]
+				`).setFooter({ text: "Source : Genius" })]
 				});
 				break;
 			}

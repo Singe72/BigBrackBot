@@ -83,7 +83,7 @@ module.exports = {
 						{ name: formatLanguage(result.detectedSourceLang), value: codeBlock(text) },
 						{ name: formatLanguage(lang), value: codeBlock(result.text) }
 					)
-					.setFooter({ text: "Source : api-free.deepl.com" });
+					.setFooter({ text: "Source : DeepL" });
 
 				interaction.editReply({ embeds: [embed] });
 			})

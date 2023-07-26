@@ -34,7 +34,7 @@ module.exports = {
 							${data.copyright ? `*© ${data.copyright}*` : ""}
 						`)
 						.setImage(data.hdurl ? data.hdurl : data.url)
-						.setFooter({ text: "Source : api.nasa.gov" });
+						.setFooter({ text: "Source : NASA" });
 
 					return interaction.reply({ embeds: [embed] });
 				} else if (data.media_type === "video") {
@@ -46,7 +46,7 @@ module.exports = {
 							${data.copyright ? `*© ${data.copyright}*` : ""}
 						`)
 						.setImage(data.thumbnail_url)
-						.setFooter({ text: "Source : api.nasa.gov" });
+						.setFooter({ text: "Source : NASA" });
 
 					const button = new ButtonBuilder()
 						.setLabel("Voir la vidéo")
