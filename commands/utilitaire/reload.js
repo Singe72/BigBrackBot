@@ -3,10 +3,9 @@ const { simpleEmbed } = require("../../utils/embeds.js");
 
 module.exports = {
 	cooldown: 5,
-	category: "utilitaire",
 	data: new SlashCommandBuilder()
 		.setName("reload")
-		.setDescription("Recharge une commande")
+		.setDescription("Recharger une commande")
 		.addStringOption(option =>
 			option.setName("commande")
 				.setDescription("Commande à recharger")
@@ -22,7 +21,8 @@ module.exports = {
 		try {
 			interaction.client.commands.delete(command.data.name);
 			const newCommand = require(`../${command.category}/${command.data.name}.js`);
-			interaction.client.commands.set(newCommand.data.name, newCommand);
+			const properties = { category:command.category, ...command };
+			interaction.client.commands.set(newCommand.data.name, properties);
 			await interaction.reply({ embeds:[simpleEmbed(`La commande \`${newCommand.data.name}\` a été rechargée !`)], ephemeral: true });
 		} catch (error) {
 			console.error(error);

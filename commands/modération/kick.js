@@ -3,10 +3,9 @@ const { simpleEmbed } = require("../../utils/embeds.js");
 
 module.exports = {
 	cooldown: 5,
-	category: "modération",
 	data: new SlashCommandBuilder()
 		.setName("kick")
-		.setDescription("Expulse un membre du serveur")
+		.setDescription("Expulser un membre du serveur")
 		.addUserOption(option =>
 			option.setName("membre")
 				.setDescription("Membre à expulser")

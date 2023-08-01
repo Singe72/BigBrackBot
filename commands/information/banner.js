@@ -4,7 +4,6 @@ const { simpleEmbed } = require("../../utils/embeds.js");
 
 module.exports = {
 	cooldown: 5,
-	category: "information",
 	data: new SlashCommandBuilder()
 		.setName("banner")
 		.setDescription("Afficher la bannière d'un membre")

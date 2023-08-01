@@ -4,10 +4,9 @@ const { simpleEmbed } = require("../../utils/embeds.js");
 
 module.exports = {
 	cooldown: 5,
-	category: "fun",
 	data: new SlashCommandBuilder()
 		.setName("nasa")
-		.setDescription("Afficher une image de la NASA")
+		.setDescription("Afficher l'image du jour de la NASA")
 		.addStringOption(option =>
 			option.setName("date")
 				.setDescription("Date de l'image")

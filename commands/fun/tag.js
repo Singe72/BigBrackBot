@@ -4,7 +4,6 @@ const { simpleEmbed } = require("../../utils/embeds.js");
 
 module.exports = {
 	cooldown: 5,
-	category: "fun",
 	data: new SlashCommandBuilder()
 		.setName("tag")
 		.setDescription("Gérer les tags")

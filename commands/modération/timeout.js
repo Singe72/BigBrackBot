@@ -4,7 +4,6 @@ const ms = require("ms");
 
 module.exports = {
 	cooldown: 5,
-	category: "modération",
 	data: new SlashCommandBuilder()
 		.setName("timeout")
 		.setDescription("Exclure temporairement un membre du serveur")

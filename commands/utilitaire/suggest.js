@@ -4,7 +4,6 @@ const { channels:{ suggestions }, clientColor } = require("../../config.json");
 
 module.exports = {
 	cooldown: 5,
-	category: "utilitaire",
 	data: new SlashCommandBuilder()
 		.setName("suggest")
 		.setDescription("Faire une suggestion")
