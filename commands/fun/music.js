@@ -88,6 +88,36 @@ module.exports = {
 		.addSubcommand(subcommand =>
 			subcommand.setName("leave")
 				.setDescription("Demander au bot de quitter le salon vocal"))
+		.addSubcommandGroup(subcommandGroup =>
+			subcommandGroup.setName("filters")
+				.setDescription("Gérer les filtres")
+				.addSubcommand(subcommand =>
+					subcommand.setName("toggle")
+						.setDescription("Activer ou désactiver un filtre")
+						.addStringOption(option =>
+							option.setName("filtre")
+								.setDescription("Nom du filtre")
+								.setRequired(true)
+								.addChoices(
+									{ name: "3d", value: "3d" },
+									{ name: "bassboost", value: "bassboost" },
+									{ name: "echo", value: "echo" },
+									{ name: "karaoke", value: "karaoke" },
+									{ name: "nightcore", value: "nightcore" },
+									{ name: "vaporwave", value: "vaporwave" },
+									{ name: "flanger", value: "flanger" },
+									{ name: "gate", value: "gate" },
+									{ name: "haas", value: "haas" },
+									{ name: "reverse", value: "reverse" },
+									{ name: "surround", value: "surround" },
+									{ name: "mcompand", value: "mcompand" },
+									{ name: "phaser", value: "phaser" },
+									{ name: "tremolo", value: "tremolo" },
+									{ name: "earwax", value: "earwax" }
+								)))
+				.addSubcommand(subcommand =>
+					subcommand.setName("reset")
+						.setDescription("Réinitialiser les filtres")))
 		.addSubcommand(subcommand =>
 			subcommand.setName("lyrics")
 				.setDescription("Afficher les paroles d'une musique")
@@ -107,12 +137,30 @@ module.exports = {
 	},
 	async execute(interaction) {
 		const { channel, client, guild, member, options } = interaction;
+		const subcommandGroup = options.getSubcommandGroup();
 		const subcommand = options.getSubcommand();
 
 		const voiceChannel = member.voice.channel;
 		if (!voiceChannel) return interaction.reply({ embeds: [simpleEmbed("Vous devrez être dans un salon vocal pour utiliser cette commande !")], ephemeral: true });
 		if (!voiceChannel.joinable) return interaction.reply({ embeds: [simpleEmbed(`${client.user} ne peut pas rejoindre ce salon vocal !`)], ephemeral: true });
 		if (!voiceChannel.id === guild.members.me.voice.channelId) return interaction.reply({ embeds: [simpleEmbed(`Vous n'êtes pas dans le même salon vocal que ${client.user} !`)], ephemeral: true });
+
+		if (subcommandGroup === "filters") {
+			const queue = client.distube.getQueue(guild);
+			if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
+
+			if (subcommand === "toggle") {
+				const filter = options.getString("filtre");
+
+				if (queue.filters.has(filter)) await queue.filters.remove(filter);
+				else await queue.filters.add(filter);
+
+				await interaction.reply({ embeds: [simpleEmbed(`Le filtre \`${filter}\` a été ${queue.filters.has(filter) ? "activé" : "désactivé"} !`)] });
+			} else if (subcommand === "reset") {
+				await queue.filters.clear();
+				await interaction.reply({ embeds: [simpleEmbed("Les filtres ont été réinitialisés !")] });
+			}
+		}
 
 		switch (subcommand) {
 			case "play": {
@@ -278,6 +326,11 @@ module.exports = {
 
 				await client.distube.voices.leave(guild);
 				await interaction.reply({ embeds: [simpleEmbed(`${client.user} a quitté le salon ${voiceChannel}.`)] });
+				break;
+			}
+
+			case "filters": {
+				console.log("yes");
 				break;
 			}
 
