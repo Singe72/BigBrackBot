@@ -11,5 +11,7 @@ module.exports = (sequelize, DataTypes) => {
 			defaultValue: 0,
 			allowNull: false
 		}
+	}, {
+		timestamps: true
 	});
 };

@@ -7,5 +7,8 @@ module.exports = (sequelize, DataTypes) => {
 		user_id: DataTypes.STRING,
 		reason: DataTypes.TEXT,
 		author_id: DataTypes.STRING
+	}, {
+		timestamps: true,
+		updatedAt: false
 	});
 };
