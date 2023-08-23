@@ -9,4 +9,13 @@ function simpleEmbed(description) {
 
 // TODO : richEmbed
 
-module.exports = { simpleEmbed };
+function logEmbed({ color, user, description, footer }) {
+	return new EmbedBuilder()
+		.setColor(color)
+		.setAuthor({ name: user.displayName, iconURL: user.displayAvatarURL() })
+		.setDescription(description)
+		.setFooter({ text: footer })
+		.setTimestamp();
+}
+
+module.exports = { simpleEmbed, logEmbed };
