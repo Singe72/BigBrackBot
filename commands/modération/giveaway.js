@@ -107,7 +107,6 @@ module.exports = {
 			case "end": {
 				const id = options.getString("id");
 				const giveaway = client.giveawaysManager.giveaways.find(g => g.messageId === id && g.guildId === interaction.guild.id);
-				console.log(client.giveawaysManager.giveaways);
 				if (!giveaway) return interaction.reply({ embeds: [simpleEmbed(`Aucun giveaway n'a été trouvé avec l'id \`${id}\` !`)], ephemeral: true });
 				if (giveaway.ended) return interaction.reply({ embeds: [simpleEmbed("Ce giveaway est déjà terminé !")], ephemeral: true });
 

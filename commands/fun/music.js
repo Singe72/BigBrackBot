@@ -329,11 +329,6 @@ module.exports = {
 				break;
 			}
 
-			case "filters": {
-				console.log("yes");
-				break;
-			}
-
 			case "lyrics": {
 				await interaction.deferReply();
 

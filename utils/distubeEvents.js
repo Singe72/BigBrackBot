@@ -18,10 +18,10 @@ module.exports = (client) => {
 			await queue.textChannel.send({ embeds: [embed] });
 		})
 		.on("addSong", async (queue, song) => {
-			await song.metadata.i.followUp({ embeds: [simpleEmbed(`[\`${song.name}\`](${song.url}) - \`${song.formattedDuration}\` a été ajouté à la file d'attente par ${song.user}.`)] });
+			await song.metadata.i.followUp({ embeds: [simpleEmbed(`[\`${song.name}\`](${song.url}) - \`${song.formattedDuration}\` a été ajouté à la file d'attente.`)] });
 		})
 		.on("addList", async (queue, playlist) => {
-			await playlist.metadata.i.followUp({ embeds: [simpleEmbed(`La playlist [\`${playlist.name}\`](${playlist.url}) (${playlist.songs.length}) a été ajoutée à la file d'attente par ${playlist.user}.`)] });
+			await playlist.metadata.i.followUp({ embeds: [simpleEmbed(`La playlist [\`${playlist.name}\`](${playlist.url}) (${playlist.songs.length}) a été ajoutée à la file d'attente.`)] });
 		})
 		.on("error", (channel, e) => {
 			if (channel) channel.send({ embeds: [simpleEmbed(`Une erreur est survenue : ${e.toString().slice(0, 1974)}`)] });

@@ -239,8 +239,6 @@ module.exports = {
 					presences += `${emoji} `;
 				});
 
-				console.log(user);
-
 				const embed = new EmbedBuilder()
 					.setColor(clientColor)
 					.setTitle("Informations du membre")

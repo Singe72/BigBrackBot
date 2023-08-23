@@ -12,11 +12,6 @@ module.exports = {
 				.addSubcommand(subcommand =>
 					subcommand.setName("set")
 						.setDescription("Modifier l'activité du bot")
-						.addStringOption(option =>
-							option.setName("activité")
-								.setDescription("Activité à afficher")
-								.setRequired(true)
-						)
 						.addIntegerOption(option =>
 							option.setName("type")
 								.setDescription("Type d'activité")
@@ -26,8 +21,14 @@ module.exports = {
 									{ name: "Participant à", value: ActivityType.Competing },
 									{ name: "Écoute", value: ActivityType.Listening },
 									{ name: "Regarde", value: ActivityType.Watching },
-									{ name: "Streame", value: ActivityType.Streaming }
+									{ name: "Streame", value: ActivityType.Streaming },
+									{ name: "Personnalisé", value: ActivityType.Custom }
 								)
+						)
+						.addStringOption(option =>
+							option.setName("activité")
+								.setDescription("Activité à afficher")
+								.setRequired(true)
 						)
 						.addStringOption(option =>
 							option.setName("url")

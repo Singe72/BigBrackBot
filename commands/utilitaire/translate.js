@@ -7,31 +7,31 @@ function formatLanguage(language) {
 	language = language.toUpperCase();
 	switch (language) {
 		case "EN":
-			return "Anglais";
+			return "🇬🇧 Anglais";
 		case "EN-GB":
-			return "Anglais (GB)";
+			return "🇬🇧 Anglais (GB)";
 		case "EN-US":
-			return "Anglais (US)";
+			return "🇺🇸 Anglais (US)";
 		case "DE":
-			return "Allemand";
+			return "🇩🇪 Allemand";
 		case "ES":
-			return "Espagnol";
+			return "🇪🇸 Espagnol";
 		case "FR":
-			return "Français";
+			return "🇫🇷 Français";
 		case "IT":
-			return "Italien";
+			return "🇮🇹 Italien";
 		case "NL":
-			return "Néerlandais";
+			return "🇳🇱 Néerlandais";
 		case "PL":
-			return "Polonais";
+			return "🇵🇱 Polonais";
 		case "PT":
-			return "Portugais";
+			return "🇵🇹 Portugais";
 		case "PT-BR":
-			return "Portugais (BR)";
+			return "🇧🇷 Portugais (BR)";
 		case "PT-PT":
-			return "Portugais (PT)";
+			return "🇵🇹 Portugais (PT)";
 		case "RU":
-			return "Russe";
+			return "🇷🇺 Russe";
 		default:
 			return language;
 	}
