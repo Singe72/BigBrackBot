@@ -7,6 +7,7 @@ module.exports = {
 	async execute(oldMessage, newMessage) {
 		const { author, channel, client, url } = newMessage;
 
+		if (!newMessage.inGuild()) return;
 		if (oldMessage.content === newMessage.content) return;
 		if (newMessage.author.bot) return;
 

@@ -9,6 +9,7 @@ module.exports = {
 
 		const { author, channel, client, content } = message;
 
+		if (!message.inGuild()) return;
 		if (author.bot) return;
 
 		try {
