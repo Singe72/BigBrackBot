@@ -24,7 +24,7 @@ module.exports = {
 		if (subcommand === "show") {
 			try {
 				const member = interaction.options.getMember("membre") ?? interaction.member;
-				const profileBuffer = await profileImage(member.id);
+				const profileBuffer = await profileImage(member.id, { customTag: member.roles.highest.name });
 				const imageAttachment = new AttachmentBuilder(profileBuffer, { name: "profile.png" });
 				await interaction.editReply({ files: [imageAttachment] });
 			} catch (error) {
