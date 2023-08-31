@@ -1,6 +1,7 @@
-const { Events } = require("discord.js");
+const { AttachmentBuilder, EmbedBuilder, Events } = require("discord.js");
+const { profileImage } = require("discord-arts");
 const { logEmbed } = require("../../utils/embeds.js");
-const { channels: { logs }, logsColors: { success } } = require("../../config.json");
+const { channels: { logs }, clientColor, logsColors: { success } } = require("../../config.json");
 
 module.exports = {
 	name: Events.GuildMemberAdd,
@@ -15,6 +16,22 @@ module.exports = {
 				footer: "Nouveau membre"
 			});
 			await client.channels.cache.get(logs).send({ embeds: [embed] });
+		} catch (error) {
+			console.error(error);
+		}
+
+		try {
+			const profileBuffer = await profileImage(member.id, { customTag: "‎" });
+			const imageAttachment = new AttachmentBuilder(profileBuffer, { name: "welcome.png" });
+
+			const embed = new EmbedBuilder()
+				.setColor(clientColor)
+				.setDescription(`**👋 Bienvenue sur le serveur ${member} !**`)
+				.setImage("attachment://welcome.png");
+
+			const { systemChannel } = member.guild;
+			const welcomeMessage = await systemChannel.send({ embeds: [embed], files: [imageAttachment] });
+			await welcomeMessage.react("<a:wave_gif:1146859208562712586>");
 		} catch (error) {
 			console.error(error);
 		}
