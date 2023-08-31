@@ -166,6 +166,9 @@ module.exports = {
 			case "play": {
 				await interaction.deferReply();
 
+				const voiceRecorder = client.voiceRecorders.get(guild.id);
+				if (voiceRecorder) return interaction.editReply({ embeds: [simpleEmbed("Un enregistrement est en cours ! Veuillez effectuer la commande </record stop:1145710825684877393>.")] });
+
 				const query = options.getString("musique");
 				await client.distube
 					.play(voiceChannel, query, {
@@ -175,7 +178,7 @@ module.exports = {
 					})
 					.catch(error => {
 						console.error(error);
-						interaction.editReply({ embeds: [simpleEmbed("Une erreur est survenue lors de la lecture de la musique !")], ephemeral: true });
+						interaction.editReply({ embeds: [simpleEmbed("Une erreur est survenue lors de la lecture de la musique !")] });
 					});
 				break;
 			}
