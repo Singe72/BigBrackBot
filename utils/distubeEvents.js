@@ -1,4 +1,6 @@
+const { EmbedBuilder } = require("discord.js");
 const { simpleEmbed } = require("./embeds.js");
+const { clientColor } = require("../config.json");
 
 module.exports = (client) => {
 	const status = queue =>
@@ -6,6 +8,7 @@ module.exports = (client) => {
 		}\` | Autoplay : \`${queue.autoplay ? "🟢" : "🔴"}\``;
 	client.distube
 		.on("initQueue", queue => {
+			queue.voice.setSelfDeaf(false);
 			queue.autoplay = false;
 			queue.volume = 100;
 		})
@@ -16,6 +19,27 @@ module.exports = (client) => {
 				${status(queue)}
 			`);
 			await queue.textChannel.send({ embeds: [embed] });
+
+			if (Math.floor(Math.random() * 20) === 0) {
+				const dances = [
+					"https://media.tenor.com/fJh-W38iA3oAAAAC/dance-kid.gif",
+					"https://media.tenor.com/nVsnTj_elCMAAAAC/shrek-dance.gif",
+					"https://media.tenor.com/J8KeZSDe_acAAAAC/dace.gif",
+					"https://media.tenor.com/2K3eAaRfAHIAAAAC/tenor.gif",
+					"https://media.tenor.com/u6r8fswiki4AAAAC/dancing-minion.gif",
+					"https://media.tenor.com/ACDsfEL2EEkAAAAC/dance-lisa-simpson.gif",
+					"https://media.tenor.com/i3gpM_yU3fcAAAAC/unicorn-dance.gif",
+					"https://media.tenor.com/382r7hxzw5YAAAAC/orange-justice-roblox.gif",
+					"https://media.tenor.com/naJicZG_DlsAAAAC/rave-party.gif",
+					"https://media.tenor.com/l03_S-DyCc8AAAAC/frog-dance.gif"
+				];
+
+				const danceEmbed = new EmbedBuilder()
+					.setColor(clientColor)
+					.setImage(dances[Math.floor(Math.random() * dances.length)]);
+
+				await queue.textChannel.send({ embeds: [danceEmbed] });
+			}
 		})
 		.on("addSong", async (queue, song) => {
 			await song.metadata.i.followUp({ embeds: [simpleEmbed(`[\`${song.name}\`](${song.url}) - \`${song.formattedDuration}\` a été ajouté à la file d'attente.`)] });
