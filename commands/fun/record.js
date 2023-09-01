@@ -1,6 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { VoiceRecorder } = require("@kirdock/discordjs-voice-recorder");
-const { getVoiceConnection, joinVoiceChannel } = require("@discordjs/voice");
 const { simpleEmbed } = require("../../utils/embeds.js");
 
 module.exports = {
@@ -38,7 +37,7 @@ module.exports = {
 		)
 		.setDMPermission(false),
 	async execute(interaction) {
-		const { client, guild, guildId, member } = interaction;
+		const { client, guildId, member } = interaction;
 		const voiceChannel = member?.voice?.channel;
 		if (!voiceChannel) return interaction.reply({ embeds: [simpleEmbed("Vous devez être dans un salon vocal pour utiliser cette commande !")], ephemeral: true });
 
@@ -49,19 +48,12 @@ module.exports = {
 				const voiceRecorder = client.voiceRecorders.get(guildId);
 				if (voiceRecorder) return interaction.reply({ embeds: [simpleEmbed("L'enregistrement audio est déjà en cours !")], ephemeral: true });
 
-				const queue = client.distube.getQueue(guildId);
-				if (queue) return interaction.reply({ embeds: [simpleEmbed("Vous ne pouvez pas enregistrer un salon vocal pendant qu'une musique est en cours !")], ephemeral: true });
-
 				const newVoiceRecorder = new VoiceRecorder();
 
-				const connection = joinVoiceChannel({
-					guildId,
-					channelId: voiceChannel.id,
-					adapterCreator: guild.voiceAdapterCreator,
-					selfDeaf: false
-				});
+				const distubeConnection = client.distube.voices.create(voiceChannel);
+				distubeConnection.setSelfDeaf(false);
 
-				newVoiceRecorder.startRecording(connection);
+				newVoiceRecorder.startRecording(distubeConnection.connection);
 				client.voiceRecorders.set(guildId, newVoiceRecorder);
 
 				await interaction.reply({ embeds: [simpleEmbed(`L'enregistrement audio a débuté dans le salon ${voiceChannel}.`)] });
@@ -73,7 +65,7 @@ module.exports = {
 
 				if (!voiceRecorder) return interaction.reply({ embeds: [simpleEmbed("Aucun enregistrement audio n'est en cours !")], ephemeral: true });
 
-				const connection = getVoiceConnection(guildId);
+				const { connection } = client.distube.voices.get(guildId);
 
 				voiceRecorder.stopRecording(connection);
 				client.voiceRecorders.delete(guildId);
