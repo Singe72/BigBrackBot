@@ -24,6 +24,7 @@ const client = new Client({
 client.cooldowns = new Collection();
 client.commands = new Collection();
 client.voiceRecorders = new Collection();
+client.speechToText = new Collection();
 
 // GiveawaysManager
 require("./utils/giveawaysManager.js")(client);

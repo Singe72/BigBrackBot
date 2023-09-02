@@ -316,7 +316,9 @@ module.exports = {
 			case "join": {
 				if (voiceChannel.id === guild.members.me.voice.channelId) return interaction.reply({ embeds: [simpleEmbed(`${client.user} est déjà dans ce salon vocal !`)], ephemeral: true });
 
-				await client.distube.voices.join(voiceChannel);
+				const distubeConnection = await client.distube.voices.join(voiceChannel);
+				await distubeConnection.setSelfDeaf(false);
+
 				await interaction.reply({ embeds: [simpleEmbed(`${client.user} a rejoint le salon ${voiceChannel}.`)] });
 				break;
 			}

@@ -48,13 +48,15 @@ module.exports = {
 				const voiceRecorder = client.voiceRecorders.get(guildId);
 				if (voiceRecorder) return interaction.reply({ embeds: [simpleEmbed("L'enregistrement audio est déjà en cours !")], ephemeral: true });
 
-				const newVoiceRecorder = new VoiceRecorder();
+				const newVoiceRecorder = new VoiceRecorder(client);
 
-				const distubeConnection = client.distube.voices.create(voiceChannel);
-				distubeConnection.setSelfDeaf(false);
+				const distubeConnection = await client.distube.voices.join(voiceChannel);
+				await distubeConnection.setSelfDeaf(false);
 
-				newVoiceRecorder.startRecording(distubeConnection.connection);
-				client.voiceRecorders.set(guildId, newVoiceRecorder);
+				(async () => {
+					newVoiceRecorder.startRecording(distubeConnection.connection);
+					client.voiceRecorders.set(guildId, newVoiceRecorder);
+				})();
 
 				await interaction.reply({ embeds: [simpleEmbed(`L'enregistrement audio a débuté dans le salon ${voiceChannel}.`)] });
 				break;
@@ -70,16 +72,12 @@ module.exports = {
 				voiceRecorder.stopRecording(connection);
 				client.voiceRecorders.delete(guildId);
 
-				const queue = client.distube.getQueue(guildId);
-				if (!queue) connection.destroy();
-
 				await interaction.reply({ embeds: [simpleEmbed(`L'enregistrement audio s'est arrêté dans le salon ${voiceChannel}.`)] });
 				break;
 			}
 
 			case "save": {
 				const voiceRecorder = client.voiceRecorders.get(guildId);
-
 				if (!voiceRecorder) return interaction.reply({ embeds: [simpleEmbed("Aucun enregistrement audio n'est en cours !")], ephemeral: true });
 
 				await interaction.deferReply();
