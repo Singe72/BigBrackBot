@@ -1,10 +1,10 @@
 const { Sequelize, DataTypes } = require("sequelize");
+const { database:{ name, host, username, password } } = require("./config.json");
 
-const sequelize = new Sequelize("database", "username", "password", {
-	host: "localhost",
-	dialect: "sqlite",
-	logging: false,
-	storage: "database.sqlite"
+const sequelize = new Sequelize(name, username, password, {
+	host: host,
+	dialect: "mysql",
+	logging: false
 });
 
 const Tags = require("./models/Tags")(sequelize, DataTypes);
