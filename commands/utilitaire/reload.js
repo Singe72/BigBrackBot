@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { PermissionFlagsBits, SlashCommandBuilder } = require("discord.js");
 const { simpleEmbed } = require("../../utils/embeds.js");
 
 module.exports = {
@@ -9,7 +9,9 @@ module.exports = {
 		.addStringOption(option =>
 			option.setName("commande")
 				.setDescription("Commande à recharger")
-				.setRequired(true)),
+				.setRequired(true))
+		.setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+		.setDMPermission(true),
 	async execute(interaction) {
 		const commandName = interaction.options.getString("commande");
 		const command = interaction.client.commands.get(commandName);
