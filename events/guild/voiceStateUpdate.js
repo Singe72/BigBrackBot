@@ -14,7 +14,7 @@ module.exports = {
 			try {
 				const embed = logEmbed({
 					color: success,
-					user: member,
+					user: member.user,
 					description: `${member} a rejoint le salon <#${newState.channelId}>.`,
 					footer: "Salon rejoint"
 				});
@@ -26,7 +26,7 @@ module.exports = {
 			try {
 				const embed = logEmbed({
 					color: danger,
-					user: member,
+					user: member.user,
 					description: `${member} a quitté le salon <#${oldState.channelId}>.`,
 					footer: "Salon quitté"
 				});
@@ -38,7 +38,7 @@ module.exports = {
 			try {
 				const embed = logEmbed({
 					color: warning,
-					user: member,
+					user: member.user,
 					description: `${member} s'est déplacé du salon <#${oldState.channelId}> vers le salon <#${newState.channelId}>.`,
 					footer: "Salon changé"
 				});
