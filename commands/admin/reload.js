@@ -1,5 +1,6 @@
 const { PermissionFlagsBits, SlashCommandBuilder } = require("discord.js");
 const { simpleEmbed } = require("../../utils/embeds.js");
+const { ownerId } = require("../../config.json");
 
 module.exports = {
 	cooldown: 5,
@@ -13,6 +14,8 @@ module.exports = {
 		.setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 		.setDMPermission(true),
 	async execute(interaction) {
+		if (interaction.user.id !== ownerId) return interaction.reply({ embeds: [simpleEmbed("Vous n'avez pas la permission d'utiliser cette commande !")], ephemeral: true });
+
 		const commandName = interaction.options.getString("commande");
 		const command = interaction.client.commands.get(commandName);
 
