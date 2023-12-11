@@ -23,7 +23,8 @@ module.exports = {
 			fun: "🎉",
 			information: "ℹ️",
 			modération: "🛠",
-			utilitaire: "👍"
+			utilitaire: "👍",
+			noël: "🎅"
 		};
 
 		const commands = [];
