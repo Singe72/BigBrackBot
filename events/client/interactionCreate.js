@@ -74,6 +74,8 @@ module.exports = {
 		} else if (interaction.isButton()) {
 			switch (interaction.customId) {
 				case "santa-register": {
+					return interaction.reply({ embeds: [simpleEmbed("Les inscriptions au Père Noël Secret de BigBrackMar sont fermées.")], ephemeral: true });
+
 					const santaParticipant = await SantaParticipants.findOne({ where: { user_id: interaction.user.id } });
 
 					if (santaParticipant) return interaction.reply({ embeds: [simpleEmbed(`Vous êtes déjà inscrit au Père Noël Secret de BigBrackMar ! Si vous souhaitez vous désinscrire ou modifier vos réponses, veuillez contacter <@${ownerId}>.`)], ephemeral: true });
