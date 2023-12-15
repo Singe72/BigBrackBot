@@ -10,5 +10,6 @@ const sequelize = new Sequelize(name, username, password, {
 const Tags = require("./models/Tags")(sequelize, DataTypes);
 const Warns = require("./models/Warns")(sequelize, DataTypes);
 const SantaParticipants = require("./models/SantaParticipants")(sequelize, DataTypes);
+const SantaGiving = require("./models/SantaGiving")(sequelize, DataTypes);
 
-module.exports = { Tags, Warns, SantaParticipants };
+module.exports = { Tags, Warns, SantaParticipants, SantaGiving };
