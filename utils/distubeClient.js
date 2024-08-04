@@ -3,6 +3,7 @@ const { DeezerPlugin } = require("@distube/deezer");
 const { SpotifyPlugin } = require("@distube/spotify");
 const { SoundCloudPlugin } = require("@distube/soundcloud");
 const { YtDlpPlugin } = require("@distube/yt-dlp");
+const { YouTubePlugin } = require("@distube/youtube");
 
 module.exports = (client) => {
 	client.distube = new DisTube(client, {
@@ -15,6 +16,7 @@ module.exports = (client) => {
 			new DeezerPlugin(),
 			new SpotifyPlugin(),
 			new SoundCloudPlugin(),
+			new YouTubePlugin(),
 			new YtDlpPlugin()
 		]
 	});

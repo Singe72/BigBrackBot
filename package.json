@@ -17,6 +17,7 @@
 		"@distube/deezer": "^2.0.1",
 		"@distube/soundcloud": "^2.0.1",
 		"@distube/spotify": "^2.0.2",
+		"@distube/youtube": "^1.0.2",
 		"@distube/yt-dlp": "^2.0.1",
 		"@distube/ytdl-core": "^4.13.3",
 		"@distube/ytsr": "^2.0.0",

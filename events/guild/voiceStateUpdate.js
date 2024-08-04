@@ -1,10 +1,19 @@
 const { Events } = require("discord.js");
 const { logEmbed } = require("../../utils/embeds.js");
 const { channels: { logs }, logsColors: { success, danger, warning } } = require("../../config.json");
+const { isVoiceChannelEmpty } = require("distube");
 
 module.exports = {
 	name: Events.VoiceStateUpdate,
 	async execute(oldState, newState) {
+		// Make bot leave voice channel if alone
+		if (!oldState?.channel) return;
+		const voice = newState.client.distube.voices.get(oldState);
+		if (voice && isVoiceChannelEmpty(oldState)) {
+			voice.leave();
+		}
+
+		// Logging voice state updates
 		if (oldState.channelId === newState.channelId) return;
 
 		const { client, id } = newState;

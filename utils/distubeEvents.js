@@ -47,9 +47,8 @@ module.exports = (client) => {
 		.on("addList", async (queue, playlist) => {
 			await playlist.metadata.i.followUp({ embeds: [simpleEmbed(`La playlist [\`${playlist.name}\`](${playlist.url}) (${playlist.songs.length}) a été ajoutée à la file d'attente.`)] });
 		})
-		.on("error", (channel, e) => {
-			if (channel) channel.send({ embeds: [simpleEmbed(`Une erreur est survenue : ${e.toString().slice(0, 1974)}`)] });
-			else console.error(e);
+		.on("error", (e, queue, song) => {
+			queue.textChannel.send({ embeds: [simpleEmbed(`Une erreur est survenue : ${e.toString().slice(0, 1974)}`)] });
 		})
 		.on("empty", channel => channel.send({ embeds: [simpleEmbed(`Le salon vocal est vide ! ${client.user} quitte le salon...`)] }))
 		.on("searchNoResult", (message, query) =>
