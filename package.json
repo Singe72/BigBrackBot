@@ -20,12 +20,9 @@
 		"@distube/soundcloud": "^2.0.4",
 		"@distube/spotify": "^2.0.2",
 		"@distube/youtube": "^1.0.4",
-		"@distube/yt-dlp": "^2.0.1",
-		"@distube/ytdl-core": "^4.15.8",
-		"@distube/ytsr": "^2.0.4",
 		"@kirdock/discordjs-voice-recorder": "^1.1.1",
 		"cpu-stat": "^2.0.1",
-		"deepl-node": "^1.15.0",
+		"deepl-node": "^1.16.0",
 		"discord-arts": "^0.6.2",
 		"discord-giveaways": "^6.0.1",
 		"discord-speech-recognition": "^3.4.1",
@@ -41,7 +38,7 @@
 		"youtube-autocomplete": "^0.0.1"
 	},
 	"devDependencies": {
-		"eslint": "^9.18.0",
+		"eslint": "^9.19.0",
 		"husky": "^9.1.7"
 	}
 }
