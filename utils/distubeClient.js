@@ -1,9 +1,10 @@
 const { DisTube } = require("distube");
-const { DeezerPlugin } = require("@distube/deezer");
-const { SpotifyPlugin } = require("@distube/spotify");
-const { SoundCloudPlugin } = require("@distube/soundcloud");
-const { YtDlpPlugin } = require("@distube/yt-dlp");
 const { YouTubePlugin } = require("@distube/youtube");
+const { SoundCloudPlugin } = require("@distube/soundcloud");
+const { SpotifyPlugin } = require("@distube/spotify");
+const { DeezerPlugin } = require("@distube/deezer");
+const { DirectLinkPlugin } = require("@distube/direct-link");
+const { FilePlugin } = require("@distube/file");
 
 module.exports = (client) => {
 	client.distube = new DisTube(client, {
@@ -13,11 +14,12 @@ module.exports = (client) => {
 		emitAddListWhenCreatingQueue: true,
 		emitAddSongWhenCreatingQueue: true,
 		plugins: [
-			new DeezerPlugin(),
-			new SpotifyPlugin(),
-			new SoundCloudPlugin(),
 			new YouTubePlugin(),
-			new YtDlpPlugin()
-		]
+			new SoundCloudPlugin(),
+			new SpotifyPlugin(),
+			new DeezerPlugin(),
+			new DirectLinkPlugin(),
+			new FilePlugin(),
+		],
 	});
 };
