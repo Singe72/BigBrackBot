@@ -4,7 +4,7 @@ const { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require("
 
 const createNasaJob = (client) => {
     return CronJob.from({
-        cronTime: "0 2 * * *",
+        cronTime: "0 3 * * *",
         onTick: async function () {
             const url = `https://api.nasa.gov/planetary/apod?api_key=${api_key}&concept_tags=True&thumbs=True`;
             const channelId = "656568484448305173";
