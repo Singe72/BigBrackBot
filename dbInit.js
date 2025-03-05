@@ -1,9 +1,13 @@
 const { Sequelize, DataTypes } = require("sequelize");
-const { database:{ name, host, username, password } } = require("./config.json");
+require("dotenv").config();
+
+const name = process.env.MARIADB_DATABASE;
+const username = process.env.MARIADB_USER;
+const password = process.env.MARIADB_PASSWORD;
 
 const sequelize = new Sequelize(name, username, password, {
-	host: host,
-	dialect: "mysql",
+	host: "localhost",
+	dialect: "mariadb",
 	logging: false
 });
 
