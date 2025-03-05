@@ -33,6 +33,7 @@ module.exports = {
 						.setDescription(`
 							__${data.title}__ ${data.date}
 							${data.copyright ? `*© ${data.copyright.replace(/\n/g, "")}*` : ""}
+							${data.explanation ?? ""}
 						`)
 						.setImage(data.hdurl ? data.hdurl : data.url)
 						.setFooter({ text: "Source : NASA" });
@@ -45,6 +46,7 @@ module.exports = {
 						.setDescription(`
 							__${data.title}__ ${data.date}
 							${data.copyright ? `*© ${data.copyright}*` : ""}
+							${data.explanation ?? ""}
 						`)
 						.setImage(data.thumbnail_url)
 						.setFooter({ text: "Source : NASA" });
