@@ -102,6 +102,7 @@ module.exports = {
 					await response.edit({ embeds: [simpleEmbed(`Le warn de ${member} a été annulé.`)], components: [] });
 				}
 			} catch (error) {
+				console.error(error);
 				await response.edit({ embeds: [simpleEmbed(`Aucune réponse reçue pendant 1 minute, le warn de ${member} est annulé.`)], components: [] });
 			}
 		} else if (subcommand === "remove") {
@@ -114,7 +115,7 @@ module.exports = {
 
 			const confirm = new ButtonBuilder()
 				.setCustomId("confirm")
-				.setLabel("Warn")
+				.setLabel("Confirmer")
 				.setStyle(ButtonStyle.Danger);
 
 			const cancel = new ButtonBuilder()
@@ -149,6 +150,7 @@ module.exports = {
 					await response.edit({ embeds: [simpleEmbed(`Le retrait du warn \`${warnId}\` est annulé.`)], components: [] });
 				}
 			} catch (error) {
+				console.error(error);
 				await response.edit({ embeds: [simpleEmbed(`Aucune réponse reçue pendant 1 minute, le retrait du warn \`${warnId}\` est annulé.`)], components: [] });
 			}
 
@@ -160,6 +162,7 @@ module.exports = {
 				try {
 					member = await interaction.guild.members.fetch(user.id);
 				} catch (error) {
+					console.error(error);
 					member = null;
 				}
 			}
