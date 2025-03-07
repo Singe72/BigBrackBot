@@ -1,4 +1,13 @@
 services:
+  bot:
+    build: .
+    container_name: bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - mariadb
+
   mariadb:
     image: mariadb:11.7.2
     container_name: mariadb

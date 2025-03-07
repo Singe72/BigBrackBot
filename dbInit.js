@@ -6,7 +6,7 @@ const username = process.env.MARIADB_USER;
 const password = process.env.MARIADB_PASSWORD;
 
 const sequelize = new Sequelize(name, username, password, {
-	host: "localhost",
+	host: "mariadb",
 	dialect: "mariadb",
 	logging: false
 });
