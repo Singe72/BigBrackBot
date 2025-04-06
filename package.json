@@ -20,6 +20,7 @@
 		"@distube/soundcloud": "^2.0.4",
 		"@distube/spotify": "^2.0.2",
 		"@distube/youtube": "^1.0.4",
+		"@distube/ytdl-core": "^4.16.8",
 		"@kirdock/discordjs-voice-recorder": "^1.1.1",
 		"cpu-stat": "^2.0.1",
 		"cron": "^3.5.0",
