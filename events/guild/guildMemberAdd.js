@@ -1,5 +1,5 @@
 const { AttachmentBuilder, EmbedBuilder, Events } = require("discord.js");
-const { profileImage } = require("discord-arts");
+const { Profile } = require("discord-arts");
 const { logEmbed } = require("../../utils/embeds.js");
 const { channels: { logs }, clientColor, logsColors: { success } } = require("../../config.json");
 
@@ -21,7 +21,12 @@ module.exports = {
 		}
 
 		try {
-			const profileBuffer = await profileImage(member.id, { customTag: "‎" });
+			const profileBuffer = await Profile(member.id, {
+				badgesFrame: true,
+				presenceStatus: "online",
+				customDate: member.user.createdAt,
+				localDateType: 'fr-FR',
+			});
 			const imageAttachment = new AttachmentBuilder(profileBuffer, { name: "welcome.png" });
 
 			const embed = new EmbedBuilder()
