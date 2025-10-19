@@ -10,6 +10,4 @@ RUN npm install
 
 COPY . .
 
-COPY patches/sig.js node_modules/@distube/ytdl-core/lib/sig.js
-
 CMD ["node", "index.js"]
