@@ -1,4 +1,5 @@
 const { Events } = require("discord.js");
+const { generateDependencyReport } = require('@discordjs/voice');
 //const createNasaJob = require("../../cron/nasa");
 
 module.exports = {
@@ -7,9 +8,11 @@ module.exports = {
 	execute(client) {
 		client.application.commands.fetch();
 		console.log(`Ready! Logged in as ${client.user.tag}`);
-		
+
 		//const nasaJob = createNasaJob(client);
 		//nasaJob.start();
 		//console.log("NASA job started");
+
+		console.log(generateDependencyReport());
 	}
 };
