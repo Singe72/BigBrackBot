@@ -19,8 +19,6 @@
 		"@distube/file": "^1.0.1",
 		"@distube/soundcloud": "^2.0.4",
 		"@distube/spotify": "^2.0.2",
-		"@distube/youtube": "^1.0.4",
-		"@distube/ytdl-core": "^4.16.12",
 		"@kirdock/discordjs-voice-recorder": "^1.1.1",
 		"@snazzah/davey": "^0.1.7",
 		"cpu-stat": "^2.0.1",
@@ -39,7 +37,8 @@
 		"sequelize": "^6.37.7",
 		"sodium-native": "^5.0.9",
 		"uuid": "^13.0.0",
-		"youtube-autocomplete": "^0.0.1"
+		"youtube-autocomplete": "^0.0.1",
+		"ytmusic-distube-plugin": "^1.2.0"
 	},
 	"devDependencies": {
 		"eslint": "^9.38.0",

@@ -1,5 +1,5 @@
 const { DisTube } = require("distube");
-const { YouTubePlugin } = require("@distube/youtube");
+const YouTubeMusicPlugin = require("ytmusic-distube-plugin");
 const { SoundCloudPlugin } = require("@distube/soundcloud");
 const { SpotifyPlugin } = require("@distube/spotify");
 const { DeezerPlugin } = require("@distube/deezer");
@@ -14,7 +14,7 @@ module.exports = (client) => {
 		emitAddListWhenCreatingQueue: true,
 		emitAddSongWhenCreatingQueue: true,
 		plugins: [
-			new YouTubePlugin(),
+			new YouTubeMusicPlugin(),
 			new SoundCloudPlugin(),
 			new SpotifyPlugin(),
 			new DeezerPlugin(),
