@@ -27,9 +27,6 @@ module.exports = (client) => {
 				autoReconnect: true,
 				destroyPlayer: false,
 			},
-			onEmptyQueue: {
-				destroyAfterMs: 30_000,
-			},
 		},
 		queueOptions: {
 			maxPreviousTracks: 25,

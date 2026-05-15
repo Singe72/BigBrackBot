@@ -97,10 +97,6 @@ module.exports = (client) => {
 		.on("trackStuck", async (player) => {
 			const channel = client.channels.cache.get(player.textChannelId);
 			if (channel) await channel.send({ embeds: [simpleEmbed("La piste est bloquée — passage à la suivante.")] }).catch(() => null);
-		})
-		.on("playerDestroy", (player) => {
-			const channel = client.channels.cache.get(player.textChannelId);
-			if (channel) channel.send({ embeds: [simpleEmbed(`Le salon vocal est vide ! ${client.user} quitte le salon...`)] }).catch(() => null);
 		});
 };
 

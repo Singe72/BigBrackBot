@@ -1,5 +1,5 @@
 const { Events } = require("discord.js");
-const { logEmbed } = require("../../utils/embeds.js");
+const { logEmbed, simpleEmbed } = require("../../utils/embeds.js");
 const { channels: { logs }, logsColors: { success, danger, warning } } = require("../../config.json");
 
 module.exports = {
@@ -14,6 +14,10 @@ module.exports = {
 			if (humans.size === 0) {
 				const player = client.lavalink?.getPlayer?.(channel.guild.id);
 				if (player && player.voiceChannelId === channel.id) {
+					const textChannel = client.channels.cache.get(player.textChannelId);
+					if (textChannel) {
+						await textChannel.send({ embeds: [simpleEmbed(`Le salon vocal est vide ! ${client.user} quitte le salon...`)] }).catch(() => null);
+					}
 					await player.destroy().catch(() => null);
 				}
 			}
