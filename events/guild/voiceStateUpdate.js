@@ -1,23 +1,27 @@
 const { Events } = require("discord.js");
 const { logEmbed } = require("../../utils/embeds.js");
 const { channels: { logs }, logsColors: { success, danger, warning } } = require("../../config.json");
-const { isVoiceChannelEmpty } = require("distube");
 
 module.exports = {
 	name: Events.VoiceStateUpdate,
 	async execute(oldState, newState) {
+		const { client, id } = newState;
+
 		// Make bot leave voice channel if alone
-		if (oldState?.channel) {
-			const voice = newState.client.distube.voices.get(oldState);
-			if (voice && isVoiceChannelEmpty(oldState)) {
-				voice.leave();
+		const channel = oldState?.channel;
+		if (channel) {
+			const humans = channel.members.filter(m => !m.user.bot);
+			if (humans.size === 0) {
+				const player = client.lavalink?.getPlayer?.(channel.guild.id);
+				if (player && player.voiceChannelId === channel.id) {
+					await player.destroy().catch(() => null);
+				}
 			}
 		}
 
 		// Logging voice state updates
 		if (oldState.channelId === newState.channelId) return;
 
-		const { client, id } = newState;
 		const member = newState.guild.members.cache.get(id);
 
 		if (!oldState.channelId && newState.channelId) {

@@ -29,9 +29,9 @@ client.speechToText = new Collection();
 // GiveawaysManager
 require("./utils/giveawaysManager.js")(client);
 
-// Distube
-require("./utils/distubeClient.js")(client);
-require("./utils/distubeEvents.js")(client);
+// Lavalink
+require("./utils/lavalinkClient.js")(client);
+require("./utils/lavalinkEvents.js")(client);
 
 const commandFoldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(commandFoldersPath);

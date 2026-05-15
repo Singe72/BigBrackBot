@@ -1,18 +1,48 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { simpleEmbed } = require("../../utils/embeds.js");
+const { formatDuration, sourceEmoji } = require("../../utils/lavalinkEvents.js");
 const AutoComplete = require("youtube-autocomplete");
-const { Client } = require("genius-lyrics");
+const { Client: GeniusClient } = require("genius-lyrics");
 const { genius: token } = require("../../config.json");
 
-function addSource(source) {
-	const sources = {
-		deezer: "<:deezer:1125458567567249579>",
-		spotify: "<:spotify:1125458571249844276>",
-		soundcloud: "<:soundcloud:1125458564673187960>",
-		youtube: "<:youtube:1125458568947171469>"
-	};
-	return sources[source] ?? "";
-}
+const BASSBOOST_EQ = [
+	{ band: 0, gain: 0.6 },
+	{ band: 1, gain: 0.7 },
+	{ band: 2, gain: 0.8 },
+	{ band: 3, gain: 0.55 },
+	{ band: 4, gain: 0.25 },
+];
+
+const TOGGLEABLE_FILTERS = {
+	bassboost: {
+		isActive: (p) => !!p.get("filter_bassboost"),
+		toggle: async (p) => {
+			const active = !!p.get("filter_bassboost");
+			await p.filterManager.setEQ(active ? [] : BASSBOOST_EQ);
+			p.set("filter_bassboost", !active);
+		},
+	},
+	nightcore: {
+		isActive: (p) => p.filterManager.filters?.nightcore === true,
+		toggle: (p) => p.filterManager.toggleNightcore(),
+	},
+	vaporwave: {
+		isActive: (p) => p.filterManager.filters?.vaporwave === true,
+		toggle: (p) => p.filterManager.toggleVaporwave(),
+	},
+	karaoke: {
+		isActive: (p) => p.filterManager.filters?.karaoke != null,
+		toggle: (p) => p.filterManager.toggleKaraoke(),
+	},
+	tremolo: {
+		isActive: (p) => p.filterManager.filters?.tremolo === true,
+		toggle: (p) => p.filterManager.toggleTremolo(),
+	},
+	rotation: {
+		isActive: (p) => p.filterManager.filters?.rotation === true,
+		toggle: (p) => p.filterManager.toggleRotation(0.2),
+	},
+};
 
 module.exports = {
 	cooldown: 0,
@@ -24,7 +54,7 @@ module.exports = {
 				.setDescription("Jouer une musique")
 				.addStringOption(option =>
 					option.setName("musique")
-						.setDescription("Nom de la musique")
+						.setDescription("Nom de la musique ou lien (YouTube, Spotify, Deezer, SoundCloud...)")
 						.setRequired(true)
 						.setAutocomplete(true)))
 		.addSubcommand(subcommand =>
@@ -99,21 +129,12 @@ module.exports = {
 								.setDescription("Nom du filtre")
 								.setRequired(true)
 								.addChoices(
-									{ name: "3d", value: "3d" },
 									{ name: "bassboost", value: "bassboost" },
-									{ name: "echo", value: "echo" },
-									{ name: "karaoke", value: "karaoke" },
 									{ name: "nightcore", value: "nightcore" },
 									{ name: "vaporwave", value: "vaporwave" },
-									{ name: "flanger", value: "flanger" },
-									{ name: "gate", value: "gate" },
-									{ name: "haas", value: "haas" },
-									{ name: "reverse", value: "reverse" },
-									{ name: "surround", value: "surround" },
-									{ name: "mcompand", value: "mcompand" },
-									{ name: "phaser", value: "phaser" },
+									{ name: "karaoke", value: "karaoke" },
 									{ name: "tremolo", value: "tremolo" },
-									{ name: "earwax", value: "earwax" }
+									{ name: "rotation (3d)", value: "rotation" }
 								)))
 				.addSubcommand(subcommand =>
 					subcommand.setName("reset")
@@ -128,11 +149,11 @@ module.exports = {
 	async autocomplete(interaction) {
 		const focusedValue = interaction.options.getFocused();
 		AutoComplete(focusedValue, async (err, queries) => {
-			if (err) throw err;
-			const choices = queries[1];
+			if (err) return;
+			const choices = queries[1] ?? [];
 			await interaction.respond(
 				choices.slice(0, 15).map(choice => ({ name: choice, value: choice }))
-			);
+			).catch(() => null);
 		});
 	},
 	async execute(interaction) {
@@ -143,22 +164,48 @@ module.exports = {
 		const voiceChannel = member.voice.channel;
 		if (!voiceChannel) return interaction.reply({ embeds: [simpleEmbed("Vous devrez être dans un salon vocal pour utiliser cette commande !")], ephemeral: true });
 		if (!voiceChannel.joinable) return interaction.reply({ embeds: [simpleEmbed(`${client.user} ne peut pas rejoindre ce salon vocal !`)], ephemeral: true });
-		if (!voiceChannel.id === guild.members.me.voice.channelId) return interaction.reply({ embeds: [simpleEmbed(`Vous n'êtes pas dans le même salon vocal que ${client.user} !`)], ephemeral: true });
+
+		const botVoiceId = guild.members.me.voice.channelId;
+		if (botVoiceId && botVoiceId !== voiceChannel.id) {
+			return interaction.reply({ embeds: [simpleEmbed(`Vous n'êtes pas dans le même salon vocal que ${client.user} !`)], ephemeral: true });
+		}
+
+		const getPlayer = () => client.lavalink.getPlayer(guild.id);
+
+		const ensurePlayer = async () => {
+			let player = getPlayer();
+			if (!player) {
+				player = client.lavalink.createPlayer({
+					guildId: guild.id,
+					voiceChannelId: voiceChannel.id,
+					textChannelId: channel.id,
+					selfDeaf: false,
+					selfMute: false,
+					volume: 100,
+				});
+			}
+			if (!player.connected) await player.connect();
+			return player;
+		};
 
 		if (subcommandGroup === "filters") {
-			const queue = client.distube.getQueue(guild);
-			if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
+			const player = getPlayer();
+			if (!player?.queue?.current) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
 
 			if (subcommand === "toggle") {
 				const filter = options.getString("filtre");
+				const handler = TOGGLEABLE_FILTERS[filter];
+				if (!handler) return interaction.reply({ embeds: [simpleEmbed(`Le filtre \`${filter}\` n'est pas supporté.`)], ephemeral: true });
 
-				if (queue.filters.has(filter)) await queue.filters.remove(filter);
-				else await queue.filters.add(filter);
+				await handler.toggle(player);
+				const nowActive = handler.isActive(player);
+				return interaction.reply({ embeds: [simpleEmbed(`Le filtre \`${filter}\` a été ${nowActive ? "activé" : "désactivé"} !`)] });
+			}
 
-				await interaction.reply({ embeds: [simpleEmbed(`Le filtre \`${filter}\` a été ${queue.filters.has(filter) ? "activé" : "désactivé"} !`)] });
-			} else if (subcommand === "reset") {
-				await queue.filters.clear();
-				await interaction.reply({ embeds: [simpleEmbed("Les filtres ont été réinitialisés !")] });
+			if (subcommand === "reset") {
+				await player.filterManager.resetFilters();
+				player.set("filter_bassboost", false);
+				return interaction.reply({ embeds: [simpleEmbed("Les filtres ont été réinitialisés !")] });
 			}
 		}
 
@@ -167,166 +214,201 @@ module.exports = {
 				await interaction.deferReply();
 
 				const query = options.getString("musique");
-				await client.distube
-					.play(voiceChannel, query, {
-						textChannel: channel,
-						member: member,
-						metadata: { i: interaction }
-					})
-					.catch(error => {
-						console.error(error);
-						interaction.editReply({ embeds: [simpleEmbed("Une erreur est survenue lors de la lecture de la musique !")] });
-					});
+
+				try {
+					const player = await ensurePlayer();
+					const result = await player.search({ query }, member.user);
+
+					if (!result || !result.tracks?.length) {
+						return interaction.editReply({ embeds: [simpleEmbed(`Aucun résultat trouvé pour \`${query}\` !`)] });
+					}
+
+					if (result.loadType === "playlist") {
+						await player.queue.add(result.tracks);
+						await interaction.editReply({
+							embeds: [simpleEmbed(`La playlist [\`${result.playlist?.name ?? "Playlist"}\`](${result.playlist?.uri ?? query}) (${result.tracks.length}) a été ajoutée à la file d'attente.`)],
+						});
+					} else {
+						const track = result.tracks[0];
+						await player.queue.add(track);
+						await interaction.editReply({
+							embeds: [simpleEmbed(`[\`${track.info.title}\`](${track.info.uri}) - \`${formatDuration(track.info.duration)}\` a été ajouté à la file d'attente.`)],
+						});
+					}
+
+					if (!player.playing && !player.paused) await player.play();
+				} catch (error) {
+					console.error(error);
+					await interaction.editReply({ embeds: [simpleEmbed("Une erreur est survenue lors de la lecture de la musique !")] }).catch(() => null);
+				}
 				break;
 			}
 
 			case "pause": {
-				const queue = client.distube.getQueue(guild);
-				if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
-				if (queue.paused) return interaction.reply({ embeds: [simpleEmbed("La musique est déjà en pause !")], ephemeral: true });
+				const player = getPlayer();
+				if (!player?.queue?.current) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
+				if (player.paused) return interaction.reply({ embeds: [simpleEmbed("La musique est déjà en pause !")], ephemeral: true });
 
-				await queue.pause();
+				await player.pause();
 				await interaction.reply({ embeds: [simpleEmbed("⏸️ La musique a été mise en pause.")] });
 				break;
 			}
 
 			case "resume": {
-				const queue = client.distube.getQueue(guild);
-				if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
-				if (!queue.paused) return interaction.reply({ embeds: [simpleEmbed("La musique n'est pas en pause !")], ephemeral: true });
+				const player = getPlayer();
+				if (!player?.queue?.current) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
+				if (!player.paused) return interaction.reply({ embeds: [simpleEmbed("La musique n'est pas en pause !")], ephemeral: true });
 
-				await queue.resume();
+				await player.resume();
 				await interaction.reply({ embeds: [simpleEmbed("▶️ La musique a été reprise.")] });
 				break;
 			}
 
 			case "seek": {
-				const queue = client.distube.getQueue(guild);
-				if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
+				const player = getPlayer();
+				if (!player?.queue?.current) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
 
 				const time = options.getInteger("temps");
-				if (time > queue.songs[0].duration) return interaction.reply({ embeds: [simpleEmbed("Le temps spécifié est supérieur à la durée de la musique !")], ephemeral: true });
+				const durationMs = player.queue.current.info.duration ?? 0;
+				if (time * 1000 > durationMs) return interaction.reply({ embeds: [simpleEmbed("Le temps spécifié est supérieur à la durée de la musique !")], ephemeral: true });
 
-				await queue.seek(time);
+				await player.seek(time * 1000);
 				await interaction.reply({ embeds: [simpleEmbed(`⏩ La musique a été avancée à \`${time} secondes\`.`)] });
 				break;
 			}
 
 			case "rewind": {
-				const queue = client.distube.getQueue(guild);
-				if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
+				const player = getPlayer();
+				if (!player?.queue?.current) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
 
 				const time = options.getInteger("temps");
-				if (queue.currentTime - time < 0) return interaction.reply({ embeds: [simpleEmbed("La musique ne peut pas être reculée d'autant de secondes !")], ephemeral: true });
+				const newPos = (player.position ?? 0) - time * 1000;
+				if (newPos < 0) return interaction.reply({ embeds: [simpleEmbed("La musique ne peut pas être reculée d'autant de secondes !")], ephemeral: true });
 
-				await queue.seek(queue.currentTime - time);
+				await player.seek(newPos);
 				await interaction.reply({ embeds: [simpleEmbed(`⏪ La musique a été reculée de \`${time} secondes\`.`)] });
 				break;
 			}
 
 			case "forward": {
-				const queue = client.distube.getQueue(guild);
-				if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
+				const player = getPlayer();
+				if (!player?.queue?.current) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
 
 				const time = options.getInteger("temps");
-				if (queue.currentTime + time > queue.songs[0].duration) return interaction.reply({ embeds: [simpleEmbed("La musique ne peut pas être avancée d'autant de secondes !")], ephemeral: true });
+				const durationMs = player.queue.current.info.duration ?? 0;
+				const newPos = (player.position ?? 0) + time * 1000;
+				if (newPos > durationMs) return interaction.reply({ embeds: [simpleEmbed("La musique ne peut pas être avancée d'autant de secondes !")], ephemeral: true });
 
-				await queue.seek(queue.currentTime + time);
+				await player.seek(newPos);
 				await interaction.reply({ embeds: [simpleEmbed(`⏩ La musique a été avancée de \`${time} secondes\`.`)] });
 				break;
 			}
 
 			case "previous": {
-				const queue = client.distube.getQueue(guild);
-				if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
-				if (queue.previousSongs.length === 0) return interaction.reply({ embeds: [simpleEmbed("Il n'y a aucune musique précédente !")], ephemeral: true });
+				const player = getPlayer();
+				if (!player?.queue?.current) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
 
-				await queue.previous();
+				const prev = player.queue.previous?.[0];
+				if (!prev) return interaction.reply({ embeds: [simpleEmbed("Il n'y a aucune musique précédente !")], ephemeral: true });
+
+				await player.queue.add(prev, 0);
+				await player.skip(0, false);
 				await interaction.reply({ embeds: [simpleEmbed("⏮️ La musique précédente est jouée.")] });
 				break;
 			}
 
 			case "skip": {
-				const queue = client.distube.getQueue(guild);
-				if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
-				if (queue.songs.length === 1 && !queue.autoplay) return interaction.reply({ embeds: [simpleEmbed("Il n'y a aucune musique dans la file d'attente !")], ephemeral: true });
+				const player = getPlayer();
+				if (!player?.queue?.current) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
+				if (!player.queue.tracks.length && !player.get("autoplay")) return interaction.reply({ embeds: [simpleEmbed("Il n'y a aucune musique dans la file d'attente !")], ephemeral: true });
 
-				await queue.skip();
+				await player.skip();
 				await interaction.reply({ embeds: [simpleEmbed("⏭️ La musique a été passée.")] });
 				break;
 			}
 
 			case "jump": {
-				const queue = client.distube.getQueue(guild);
-				if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
+				const player = getPlayer();
+				if (!player?.queue?.current) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
 
 				const number = options.getInteger("numéro");
+				if (number < 1 || number > player.queue.tracks.length) {
+					return interaction.reply({ embeds: [simpleEmbed("Le numéro de la musique est invalide !")], ephemeral: true });
+				}
+
 				try {
-					queue.jump(number);
+					await player.skip(number);
 					await interaction.reply({ embeds: [simpleEmbed(`⏭️ La musique a été passée à la position \`${number}\`.`)] });
 				} catch (error) {
+					console.error(error);
 					await interaction.reply({ embeds: [simpleEmbed("Le numéro de la musique est invalide !")], ephemeral: true });
 				}
 				break;
 			}
 
 			case "stop": {
-				const queue = client.distube.getQueue(guild);
-				if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
+				const player = getPlayer();
+				if (!player?.queue?.current) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
 
-				await queue.stop();
+				await player.destroy();
 				await interaction.reply({ embeds: [simpleEmbed("⏹️ La musique a été arrêtée.")] });
 				break;
 			}
 
 			case "queue": {
-				const queue = client.distube.getQueue(guild);
-				if (!queue) return interaction.reply({ embeds: [simpleEmbed("La file d'attente est vide.")] });
+				const player = getPlayer();
+				if (!player?.queue?.current) return interaction.reply({ embeds: [simpleEmbed("La file d'attente est vide.")] });
+
+				const current = player.queue.current;
+				const upcoming = player.queue.tracks;
+				const remaining = upcoming.length;
+
 				await interaction.reply({
 					embeds: [simpleEmbed(
-						`**Joue actuellement** [\`${queue.songs[0].name}\`](${queue.songs[0].url}) - \`${queue.songs[0].formattedDuration}\`
-					${queue.songs.length <= 1 ? "\nLa file d'attente est vide." : `
-					**__File d'attente__** (${queue.songs.length - 1})
-					${queue.songs.slice(1, 11).map((song, id) => `${addSource(song.source)} **${id + 1}**. [\`${song.name}\`](${song.url}) - \`${song.formattedDuration}\``).join("\n")}
+						`**Joue actuellement** [\`${current.info.title}\`](${current.info.uri}) - \`${formatDuration(current.info.duration)}\`
+					${remaining === 0 ? "\nLa file d'attente est vide." : `
+					**__File d'attente__** (${remaining})
+					${upcoming.slice(0, 10).map((song, id) => `${sourceEmoji(song.info.sourceName)} **${id + 1}**. [\`${song.info.title}\`](${song.info.uri}) - \`${formatDuration(song.info.duration)}\``).join("\n")}
 
-					${queue.songs.length > 11 ? `Et ${queue.songs.length - 11} autre${queue.songs.length - 11 > 1 ? "s" : ""}...` : ""}`}
-				`)]
+					${remaining > 10 ? `Et ${remaining - 10} autre${remaining - 10 > 1 ? "s" : ""}...` : ""}`}
+				`)],
 				});
 				break;
 			}
 
 			case "shuffle": {
-				const queue = client.distube.getQueue(guild);
-				if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
+				const player = getPlayer();
+				if (!player?.queue?.current) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
 
-				await queue.shuffle();
+				await player.queue.shuffle();
 				await interaction.reply({ embeds: [simpleEmbed("🔀 La file d'attente a été mélangée.")] });
 				break;
 			}
 
 			case "autoplay": {
-				const queue = client.distube.getQueue(guild);
-				if (!queue) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
+				const player = getPlayer();
+				if (!player?.queue?.current) return interaction.reply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture !")], ephemeral: true });
 
-				await queue.toggleAutoplay();
-				await interaction.reply({ embeds: [simpleEmbed(`▶️ Le mode autoplay a été \`${queue.autoplay ? "activé" : "désactivé"}\`.`)] });
+				const next = !player.get("autoplay");
+				player.set("autoplay", next);
+				await interaction.reply({ embeds: [simpleEmbed(`▶️ Le mode autoplay a été \`${next ? "activé" : "désactivé"}\`.`)] });
 				break;
 			}
 
 			case "join": {
-				if (voiceChannel.id === guild.members.me.voice.channelId) return interaction.reply({ embeds: [simpleEmbed(`${client.user} est déjà dans ce salon vocal !`)], ephemeral: true });
+				if (botVoiceId === voiceChannel.id) return interaction.reply({ embeds: [simpleEmbed(`${client.user} est déjà dans ce salon vocal !`)], ephemeral: true });
 
-				const distubeConnection = await client.distube.voices.join(voiceChannel);
-				await distubeConnection.setSelfDeaf(false);
-
+				await ensurePlayer();
 				await interaction.reply({ embeds: [simpleEmbed(`${client.user} a rejoint le salon ${voiceChannel}.`)] });
 				break;
 			}
 
 			case "leave": {
-				if (voiceChannel.id !== guild.members.me.voice.channelId) return interaction.reply({ embeds: [simpleEmbed(`Vous n'êtes pas dans le même salon vocal que ${client.user} !`)], ephemeral: true });
+				const player = getPlayer();
+				if (!player) return interaction.reply({ embeds: [simpleEmbed(`${client.user} n'est pas dans un salon vocal !`)], ephemeral: true });
+				if (player.voiceChannelId !== voiceChannel.id) return interaction.reply({ embeds: [simpleEmbed(`Vous n'êtes pas dans le même salon vocal que ${client.user} !`)], ephemeral: true });
 
-				await client.distube.voices.leave(guild);
+				await player.destroy();
 				await interaction.reply({ embeds: [simpleEmbed(`${client.user} a quitté le salon ${voiceChannel}.`)] });
 				break;
 			}
@@ -334,12 +416,15 @@ module.exports = {
 			case "lyrics": {
 				await interaction.deferReply();
 
-				const music = options.getString("musique") ?? client.distube.getQueue(guild)?.songs[0]?.name;
-				if (!music) return interaction.editReply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture, et vous n'avez spécifier aucune musique valide !")], ephemeral: true });
+				const player = getPlayer();
+				const music = options.getString("musique") ?? player?.queue?.current?.info?.title;
+				if (!music) return interaction.editReply({ embeds: [simpleEmbed("Aucune musique n'est en cours de lecture, et vous n'avez spécifier aucune musique valide !")] });
 
-				const geniusClient = new Client(token);
+				const geniusClient = new GeniusClient(token);
 				const searches = await geniusClient.songs.search(music);
 				const firstSong = searches[0];
+				if (!firstSong) return interaction.editReply({ embeds: [simpleEmbed(`Aucune parole trouvée pour \`${music}\` !`)] });
+
 				const lyrics = await firstSong.lyrics();
 
 				await interaction.editReply({
@@ -347,10 +432,10 @@ module.exports = {
 						`**__Paroles de ${firstSong.title}__**
 
 					${lyrics.length > 4096 ? `${lyrics.slice(0, 4093)}...` : lyrics}
-				`).setFooter({ text: "Source : Genius" })]
+				`).setFooter({ text: "Source : Genius" })],
 				});
 				break;
 			}
 		}
-	}
+	},
 };
