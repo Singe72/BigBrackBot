@@ -47,9 +47,9 @@ plugins:
 
 lavalink:
   plugins:
-    - dependency: "dev.lavalink.youtube:youtube-plugin:1.13.5"
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.1"
       snapshot: false
-    - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.7.5"
+    - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.8.1"
       snapshot: false
   server:
     password: "${LAVALINK_SERVER_PASSWORD}"
