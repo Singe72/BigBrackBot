@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { VoiceRecorder } = require("@kirdock/discordjs-voice-recorder");
+const { joinVoiceChannel, getVoiceConnection } = require("@discordjs/voice");
 const { simpleEmbed } = require("../../utils/embeds.js");
 
 module.exports = {
@@ -50,11 +51,16 @@ module.exports = {
 
 				const newVoiceRecorder = new VoiceRecorder(client);
 
-				const distubeConnection = await client.distube.voices.join(voiceChannel);
-				await distubeConnection.setSelfDeaf(false);
+				const connection = joinVoiceChannel({
+					channelId: voiceChannel.id,
+					guildId: voiceChannel.guild.id,
+					adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+					selfDeaf: false,
+					selfMute: true,
+				});
 
 				(async () => {
-					newVoiceRecorder.startRecording(distubeConnection.connection);
+					newVoiceRecorder.startRecording(connection);
 					client.voiceRecorders.set(guildId, newVoiceRecorder);
 				})();
 
@@ -67,9 +73,11 @@ module.exports = {
 
 				if (!voiceRecorder) return interaction.reply({ embeds: [simpleEmbed("Aucun enregistrement audio n'est en cours !")], ephemeral: true });
 
-				const { connection } = client.distube.voices.get(guildId);
-
-				voiceRecorder.stopRecording(connection);
+				const connection = getVoiceConnection(guildId);
+				if (connection) {
+					voiceRecorder.stopRecording(connection);
+					connection.destroy();
+				}
 				client.voiceRecorders.delete(guildId);
 
 				await interaction.reply({ embeds: [simpleEmbed(`L'enregistrement audio s'est arrêté dans le salon ${voiceChannel}.`)] });

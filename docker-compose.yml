@@ -7,6 +7,7 @@ services:
       - .env
     depends_on:
       - mariadb
+      - lavalink
 
   mariadb:
     image: mariadb:11.7.2
@@ -31,5 +32,30 @@ services:
     ports:
       - "8080:80"
 
+  lavalink:
+    image: ghcr.io/lavalink-devs/lavalink:4
+    container_name: lavalink
+    restart: unless-stopped
+    environment:
+      _JAVA_OPTIONS: -Xmx512M
+      SERVER_PORT: 2333
+      LAVALINK_SERVER_PASSWORD: ${LAVALINK_PASSWORD}
+      PLUGINS_SPOTIFY_CLIENTID: ${SPOTIFY_CLIENT_ID}
+      PLUGINS_SPOTIFY_CLIENTSECRET: ${SPOTIFY_CLIENT_SECRET}
+      PLUGINS_APPLEMUSIC_MEDIAAPITOKEN: ${APPLE_MUSIC_TOKEN:-}
+    volumes:
+      - ./lavalink/application.yml:/opt/Lavalink/application.yml:ro
+      - lavalink_plugins:/opt/Lavalink/plugins
+    expose:
+      - 2333
+    ports:
+      - "2333:2333"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 2333 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   mariadb_data:
+  lavalink_plugins:

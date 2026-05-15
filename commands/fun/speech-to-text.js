@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { addSpeechEvent } = require("discord-speech-recognition");
+const { joinVoiceChannel, getVoiceConnection } = require("@discordjs/voice");
 const { simpleEmbed } = require("../../utils/embeds.js");
 
 module.exports = {
@@ -30,15 +31,22 @@ module.exports = {
 				});
 			}
 
-			const distubeConnection = await client.distube.voices.join(voiceChannel);
-			await distubeConnection.setSelfDeaf(false);
+			const connection = joinVoiceChannel({
+				channelId: voiceChannel.id,
+				guildId: voiceChannel.guild.id,
+				adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+				selfDeaf: false,
+				selfMute: true,
+			});
 
-			client.speechToText.set(guildId, distubeConnection.connection);
+			client.speechToText.set(guildId, connection);
 			client.speechToTextEvents = true;
 			await interaction.reply({ embeds: [simpleEmbed(`La reconnaissance vocale a été activée dans le salon ${voiceChannel}.`)] });
 		} else {
 			if (!client.speechToText.has(guildId)) return interaction.reply({ embeds: [simpleEmbed("La reconnaissance vocale n'est pas activée dans ce salon !")], ephemeral: true });
 
+			const existing = client.speechToText.get(guildId) ?? getVoiceConnection(guildId);
+			existing?.destroy?.();
 			client.speechToText.delete(guildId);
 			await interaction.reply({ embeds: [simpleEmbed(`La reconnaissance vocale a été désactivée dans le salon ${voiceChannel}.`)] });
 		}
