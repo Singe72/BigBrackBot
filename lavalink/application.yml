@@ -26,6 +26,10 @@ plugins:
     oauth:
       enabled: true
       refreshToken: "${YOUTUBE_REFRESH_TOKEN:}"
+      # Ne pas rafraîchir le token au démarrage : une erreur passagère de Google
+      # (503) ferait planter tout Lavalink. Le token est rafraîchi à la 1ère lecture.
+      # ⚠ Si YOUTUBE_REFRESH_TOKEN est vide, repasser à false pour obtenir le code.
+      skipInitialization: true
     # Déchiffrement des signatures (nécessaire pour les clients WEB)
     remoteCipher:
       url: "http://yt-cipher:8001"
