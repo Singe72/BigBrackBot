@@ -10,14 +10,27 @@ plugins:
     allowSearch: true
     allowDirectVideoIds: true
     allowDirectPlaylistIds: true
+    # Ordre = ordre d'essai. MUSIC sert à la recherche, TV (OAuth) à la lecture.
     clients:
       - MUSIC
-      - ANDROID_VR
+      - TV
+      - TVHTML5_SIMPLY
       - WEB
+      - ANDROID_VR
       - WEBEMBEDDED
-    # oauth:
-    #   enabled: false
-    #   refreshToken: ""
+    # YouTube bloque les IP de serveurs ("This video requires login").
+    # Utiliser un compte Google JETABLE (risque de bannissement du compte).
+    # 1er lancement : laisser YOUTUBE_REFRESH_TOKEN vide, suivre le lien + code
+    # affichés dans les logs Lavalink, puis copier le refresh token affiché
+    # dans .env (YOUTUBE_REFRESH_TOKEN=...).
+    oauth:
+      enabled: true
+      refreshToken: "${YOUTUBE_REFRESH_TOKEN:}"
+    # Déchiffrement des signatures (nécessaire pour les clients WEB)
+    remoteCipher:
+      url: "http://yt-cipher:8001"
+      password: "${YT_CIPHER_TOKEN:}"
+      userAgent: "BigBrackBot"
 
   lavasrc:
     providers:
@@ -50,7 +63,7 @@ plugins:
 
 lavalink:
   plugins:
-    - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.1"
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.2"
       snapshot: false
     - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.8.1"
       snapshot: false
@@ -103,6 +116,7 @@ logging:
   level:
     root: INFO
     lavalink: INFO
+    dev.lavalink.youtube.http.YoutubeOauth2Handler: INFO
 
   request:
     enabled: true

@@ -44,6 +44,10 @@ services:
       PLUGINS_SPOTIFY_CLIENTID: ${SPOTIFY_CLIENT_ID}
       PLUGINS_SPOTIFY_CLIENTSECRET: ${SPOTIFY_CLIENT_SECRET}
       PLUGINS_APPLEMUSIC_MEDIAAPITOKEN: ${APPLE_MUSIC_TOKEN:-}
+      YOUTUBE_REFRESH_TOKEN: ${YOUTUBE_REFRESH_TOKEN:-}
+      YT_CIPHER_TOKEN: ${YT_CIPHER_TOKEN:-}
+    depends_on:
+      - yt-cipher
     volumes:
       - ./lavalink/application.yml:/opt/Lavalink/application.yml:ro
       - lavalink_plugins:/opt/Lavalink/plugins
@@ -56,6 +60,16 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  yt-cipher:
+    image: ghcr.io/kikkia/yt-cipher:master
+    container_name: yt-cipher
+    restart: unless-stopped
+    environment:
+      API_TOKEN: ${YT_CIPHER_TOKEN:-}
+      OVERRIDE_PLAYER_VARIANT: IAS
+    expose:
+      - 8001
 
 volumes:
   mariadb_data:
